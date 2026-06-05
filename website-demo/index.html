@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Business Name — Coming Soon</title>
+    <meta name="description" content="Professional website built by My Dream Job — AI Automation for Small Business.">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --cream: #FAF6F0;
+            --copper: #B87333;
+            --copper-light: #D4956A;
+            --charcoal: #2D2D2D;
+            --card: #FFFFFF;
+            --text: #3A3A3A;
+            --muted: #6B6B6B;
+            --border: #E8E0D5;
+            --green: #5B8C5A;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--cream);
+            color: var(--text);
+            line-height: 1.7;
+        }
+
+        /* Demo Banner */
+        .demo-banner {
+            background: var(--copper);
+            color: #fff;
+            text-align: center;
+            padding: 0.6rem 1rem;
+            font-size: 0.85rem;
+            font-weight: 500;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .demo-banner span { background: rgba(255,255,255,0.15); padding: 2px 10px; border-radius: 4px; margin: 0 4px; font-family: monospace; }
+
+        /* Navigation */
+        nav {
+            background: var(--card);
+            border-bottom: 1px solid var(--border);
+            padding: 0 2rem;
+        }
+        nav .inner {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+        }
+        nav .logo { font-size: 1.2rem; font-weight: 700; color: var(--charcoal); }
+        nav .logo span { color: var(--copper); }
+        nav a {
+            color: var(--muted);
+            text-decoration: none;
+            margin-left: 2rem;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+        nav a:hover { color: var(--copper); }
+
+        /* Hero */
+        .hero {
+            padding: 5rem 2rem;
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .hero h1 { font-size: 2.6rem; font-weight: 800; color: var(--charcoal); line-height: 1.2; margin-bottom: 1rem; }
+        .hero h1 span { color: var(--copper); }
+        .hero p { font-size: 1.15rem; color: var(--muted); max-width: 560px; margin: 0 auto 2rem; }
+        .hero .cta {
+            display: inline-block;
+            background: var(--copper);
+            color: #fff;
+            padding: 0.85rem 2rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: background 0.2s;
+        }
+        .hero .cta:hover { background: var(--copper-light); }
+
+        /* Sections */
+        section { padding: 4rem 2rem; }
+        section .inner { max-width: 1100px; margin: 0 auto; }
+        section h2 { font-size: 1.8rem; font-weight: 700; color: var(--charcoal); text-align: center; margin-bottom: 0.5rem; }
+        section .subtitle { text-align: center; color: var(--muted); margin-bottom: 3rem; font-size: 1rem; }
+        section:nth-child(even) { background: var(--card); }
+
+        /* About / Services Grid */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2.5rem;
+            align-items: start;
+        }
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+        }
+        .card {
+            background: var(--cream);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+        }
+        .card .icon { font-size: 2.2rem; margin-bottom: 0.8rem; display: block; }
+        .card h3 { font-size: 1.1rem; color: var(--charcoal); margin-bottom: 0.4rem; }
+        .card p { color: var(--muted); font-size: 0.9rem; }
+
+        /* Contact */
+        .contact-info {
+            text-align: center;
+            background: var(--copper);
+            color: #fff;
+            padding: 4rem 2rem;
+            border-radius: 12px;
+        }
+        .contact-info h2 { color: #fff; }
+        .contact-info .subtitle { color: rgba(255,255,255,0.8); }
+        .contact-info a { color: #fff; text-decoration: underline; font-weight: 600; }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 2rem;
+            color: var(--muted);
+            font-size: 0.85rem;
+            border-top: 1px solid var(--border);
+        }
+
+        @media (max-width: 768px) {
+            .grid-2, .grid-3 { grid-template-columns: 1fr; }
+            .hero h1 { font-size: 2rem; }
+            section { padding: 3rem 1rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="demo-banner">
+    🔧 Live Demo — This site is being built in real time &nbsp;·&nbsp; Built by <strong>My Dream Job</strong>
+</div>
+
+<nav>
+    <div class="inner">
+        <div class="logo">Your <span>Business</span></div>
+        <div>
+            <a href="#about">About</a>
+            <a href="#services">Services</a>
+            <a href="#contact">Contact</a>
+        </div>
+    </div>
+</nav>
+
+<section class="hero">
+    <h1>Welcome to <span>Your Business</span></h1>
+    <p>This is a live demonstration of your new website being built from scratch. Every section you see here is custom-built and can be tailored to exactly what your business needs.</p>
+    <a href="#contact" class="cta">Get in Touch</a>
+</section>
+
+<section id="about">
+    <div class="inner">
+        <h2>About Your Business</h2>
+        <p class="subtitle">Tell your story. Share your mission. Let clients know what you stand for.</p>
+        <div class="grid-2">
+            <div class="card" style="text-align:left;">
+                <h3 style="text-align:center;">Our Story</h3>
+                <p style="margin-top:0.5rem;">This section is where your story goes. Who you are, what you do, and why it matters. We can tailor every word to reflect your brand voice — professional, friendly, or whatever suits you best.</p>
+                <p style="margin-top:0.5rem;">Whether you're a tradie, accountant, real estate agent, or professional service — your website should feel like you.</p>
+            </div>
+            <div class="card" style="text-align:left;">
+                <h3 style="text-align:center;">What We'll Build</h3>
+                <ul style="list-style:none; margin-top:0.5rem;">
+                    <li style="padding:0.4rem 0; border-bottom:1px solid var(--border);">✓ A homepage that tells your story</li>
+                    <li style="padding:0.4rem 0; border-bottom:1px solid var(--border);">✓ Services or product pages</li>
+                    <li style="padding:0.4rem 0; border-bottom:1px solid var(--border);">✓ Contact form and business details</li>
+                    <li style="padding:0.4rem 0; border-bottom:1px solid var(--border);">✓ Mobile-friendly responsive design</li>
+                    <li style="padding:0.4rem 0;">✓ Ongoing updates and changes as needed</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="services">
+    <div class="inner">
+        <h2>Services</h2>
+        <p class="subtitle">Add your services here — each one can be customised with its own description, pricing, or call to action.</p>
+        <div class="grid-3">
+            <div class="card">
+                <span class="icon">🔧</span>
+                <h3>Service One</h3>
+                <p>Describe what you offer. This is placeholder content that gets replaced with your actual service details.</p>
+            </div>
+            <div class="card">
+                <span class="icon">⭐</span>
+                <h3>Service Two</h3>
+                <p>Every service card can include text, icons, links, or even pricing — built exactly how you want it.</p>
+            </div>
+            <div class="card">
+                <span class="icon">📈</span>
+                <h3>Service Three</h3>
+                <p>Add as many or as few as you need. The layout adapts automatically to fit your content.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <div class="inner">
+        <div class="contact-info" id="contact">
+            <h2>Ready to Make This Yours?</h2>
+            <p class="subtitle">This is just the beginning — every part of this page can be tailored to your business.</p>
+            <p style="margin-top:1.5rem; font-size:1.05rem;">
+                📧 <a href="mailto:simonfungwork@gmail.com">simonfungwork@gmail.com</a><br>
+                📍 Brisbane, Australia
+            </p>
+        </div>
+    </div>
+</section>
+
+<footer>
+    <p>Built by <strong>My Dream Job</strong> — AI Automation for Small Business. Brisbane, Australia.</p>
+</footer>
+
+</body>
+</html>
