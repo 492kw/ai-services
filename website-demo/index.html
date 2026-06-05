@@ -9,27 +9,29 @@
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
         :root {
-            --cream: #FAF6F0;
-            --copper: #B87333;
-            --copper-light: #D4956A;
-            --charcoal: #2D2D2D;
-            --card: #FFFFFF;
-            --text: #3A3A3A;
-            --muted: #6B6B6B;
-            --border: #E8E0D5;
-            --green: #5B8C5A;
+            --navy:      #1B2A4A;
+            --steel:     #4A6FA5;
+            --steel-lt:  #6B8FC4;
+            --silver:    #D8DFE8;
+            --silver-lt: #EDF1F5;
+            --ice:       #F4F7FA;
+            --white:     #FFFFFF;
+            --charcoal:  #1E2530;
+            --text:      #2D3748;
+            --muted:     #64748B;
+            --border:    #CBD5E1;
         }
 
         body {
             font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-            background: var(--cream);
+            background: var(--ice);
             color: var(--text);
             line-height: 1.7;
         }
 
         /* Demo Banner */
         .demo-banner {
-            background: var(--copper);
+            background: var(--navy);
             color: #fff;
             text-align: center;
             padding: 0.6rem 1rem;
@@ -39,11 +41,11 @@
             top: 0;
             z-index: 100;
         }
-        .demo-banner span { background: rgba(255,255,255,0.15); padding: 2px 10px; border-radius: 4px; margin: 0 4px; font-family: monospace; }
+        .demo-banner span { background: rgba(255,255,255,0.12); padding: 2px 10px; border-radius: 4px; margin: 0 4px; font-family: monospace; }
 
         /* Navigation */
         nav {
-            background: var(--card);
+            background: var(--white);
             border-bottom: 1px solid var(--border);
             padding: 0 2rem;
         }
@@ -56,7 +58,7 @@
             padding: 1rem 0;
         }
         nav .logo { font-size: 1.2rem; font-weight: 700; color: var(--charcoal); }
-        nav .logo span { color: var(--copper); }
+        nav .logo span { color: var(--steel); }
         nav a {
             color: var(--muted);
             text-decoration: none;
@@ -64,7 +66,7 @@
             font-size: 0.9rem;
             transition: color 0.2s;
         }
-        nav a:hover { color: var(--copper); }
+        nav a:hover { color: var(--steel); }
 
         /* Hero */
         .hero {
@@ -72,29 +74,32 @@
             text-align: center;
             max-width: 800px;
             margin: 0 auto;
+            background: linear-gradient(135deg, var(--navy) 0%, var(--steel) 100%);
+            border-radius: 0 0 24px 24px;
+            color: #fff;
         }
-        .hero h1 { font-size: 2.6rem; font-weight: 800; color: var(--charcoal); line-height: 1.2; margin-bottom: 1rem; }
-        .hero h1 span { color: var(--copper); }
-        .hero p { font-size: 1.15rem; color: var(--muted); max-width: 560px; margin: 0 auto 2rem; }
+        .hero h1 { font-size: 2.6rem; font-weight: 800; color: #fff; line-height: 1.2; margin-bottom: 1rem; }
+        .hero h1 span { color: #93C5FD; }
+        .hero p { font-size: 1.15rem; color: rgba(255,255,255,0.8); max-width: 560px; margin: 0 auto 2rem; }
         .hero .cta {
             display: inline-block;
-            background: var(--copper);
-            color: #fff;
+            background: #fff;
+            color: var(--navy);
             padding: 0.85rem 2rem;
             border-radius: 8px;
             text-decoration: none;
-            font-weight: 600;
+            font-weight: 700;
             font-size: 1rem;
-            transition: background 0.2s;
+            transition: all 0.2s;
         }
-        .hero .cta:hover { background: var(--copper-light); }
+        .hero .cta:hover { background: var(--silver-lt); transform: translateY(-1px); }
 
         /* Sections */
         section { padding: 4rem 2rem; }
         section .inner { max-width: 1100px; margin: 0 auto; }
         section h2 { font-size: 1.8rem; font-weight: 700; color: var(--charcoal); text-align: center; margin-bottom: 0.5rem; }
         section .subtitle { text-align: center; color: var(--muted); margin-bottom: 3rem; font-size: 1rem; }
-        section:nth-child(even) { background: var(--card); }
+        section:nth-child(odd):not(.hero-section) { background: var(--white); }
 
         /* About / Services Grid */
         .grid-2 {
@@ -109,27 +114,32 @@
             gap: 2rem;
         }
         .card {
-            background: var(--cream);
+            background: var(--white);
             border: 1px solid var(--border);
             border-radius: 12px;
             padding: 2rem;
             text-align: center;
+            transition: transform 0.2s, box-shadow 0.2s;
         }
+        .card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(27,42,74,0.08); }
         .card .icon { font-size: 2.2rem; margin-bottom: 0.8rem; display: block; }
         .card h3 { font-size: 1.1rem; color: var(--charcoal); margin-bottom: 0.4rem; }
         .card p { color: var(--muted); font-size: 0.9rem; }
+        .card ul { list-style: none; }
+        .card ul li { padding: 0.4rem 0; border-bottom: 1px solid var(--silver-lt); color: var(--text); font-size: 0.9rem; }
+        .card ul li:last-child { border-bottom: none; }
 
         /* Contact */
         .contact-info {
             text-align: center;
-            background: var(--copper);
+            background: linear-gradient(135deg, var(--navy) 0%, var(--steel) 100%);
             color: #fff;
             padding: 4rem 2rem;
             border-radius: 12px;
         }
         .contact-info h2 { color: #fff; }
         .contact-info .subtitle { color: rgba(255,255,255,0.8); }
-        .contact-info a { color: #fff; text-decoration: underline; font-weight: 600; }
+        .contact-info a { color: #93C5FD; text-decoration: underline; font-weight: 600; }
 
         /* Footer */
         footer {
@@ -139,11 +149,13 @@
             font-size: 0.85rem;
             border-top: 1px solid var(--border);
         }
+        footer strong { color: var(--steel); }
 
         @media (max-width: 768px) {
             .grid-2, .grid-3 { grid-template-columns: 1fr; }
             .hero h1 { font-size: 2rem; }
             section { padding: 3rem 1rem; }
+            .hero { margin: 0 1rem; }
         }
     </style>
 </head>
