@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TradieFlow Demo — AI Assistant for Tradies</title>
+<style>
+  :root {
+    --cream: #FAF6F0;
+    --cream-dark: #F0EADE;
+    --copper: #B87333;
+    --copper-light: #D4955A;
+    --text: #2D2A26;
+    --text-muted: #6B6560;
+    --white: #FFFFFF;
+    --green: #4A9E6B;
+    --green-bg: #E8F5EE;
+    --red: #C44B4B;
+    --red-bg: #FDF0F0;
+    --gray-border: #E0DBD4;
+    --shadow: 0 2px 8px rgba(0,0,0,0.06);
+    --radius: 10px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    background: var(--cream);
+    color: var(--text);
+    line-height: 1.5;
+    min-height: 100vh;
+  }
+
+  /* -- Demo banner -- */
+  .demo-banner {
+    background: var(--copper);
+    color: var(--white);
+    text-align: center;
+    padding: 6px 12px;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+  }
+
+  /* -- Header -- */
+  .header {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 24px 24px 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .header h1 {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text);
+  }
+  .header h1 span { color: var(--copper); }
+  .header .badge {
+    background: var(--copper);
+    color: var(--white);
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 99px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  /* -- Subtitle -- */
+  .subtitle {
+    max-width: 960px;
+    margin: 12px auto 0;
+    padding: 0 24px;
+    font-size: 15px;
+    color: var(--text-muted);
+  }
+
+  /* -- Main layout -- */
+  .main {
+    max-width: 960px;
+    margin: 24px auto;
+    padding: 0 24px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+
+  @media (max-width: 720px) {
+    .main { grid-template-columns: 1fr; }
+  }
+
+  /* -- Panels -- */
+  .panel {
+    background: var(--white);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    border: 1px solid var(--gray-border);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  .panel-header {
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--gray-border);
+    font-weight: 700;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--cream-dark);
+  }
+  .panel-header .dot {
+    width: 8px; height: 8px; border-radius: 99px;
+  }
+  .dot.client { background: #4A90D9; }
+  .dot.ai { background: var(--copper); }
+  .dot.tradie { background: var(--green); }
+
+  .panel-body {
+    flex: 1;
+    padding: 14px 16px;
+    overflow-y: auto;
+    max-height: 420px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  /* -- Chat bubbles -- */
+  .bubble {
+    max-width: 88%;
+    padding: 10px 14px;
+    border-radius: 14px;
+    font-size: 14px;
+    line-height: 1.45;
+    animation: fadeIn 0.3s ease;
+    word-wrap: break-word;
+  }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+  .bubble.client {
+    align-self: flex-end;
+    background: #E8F0FE;
+    color: var(--text);
+    border-bottom-right-radius: 4px;
+  }
+  .bubble.ai {
+    align-self: flex-start;
+    background: var(--cream-dark);
+    color: var(--text);
+    border-bottom-left-radius: 4px;
+  }
+  .bubble .sender {
+    font-size: 11px;
+    font-weight: 700;
+    margin-bottom: 3px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+  }
+  .bubble .time {
+    font-size: 10px;
+    color: var(--text-muted);
+    margin-top: 4px;
+    text-align: right;
+  }
+
+  /* -- Input row -- */
+  .input-row {
+    display: flex;
+    gap: 8px;
+    padding: 12px 16px;
+    border-top: 1px solid var(--gray-border);
+    background: var(--white);
+  }
+  .input-row input {
+    flex: 1;
+    padding: 10px 14px;
+    border: 1.5px solid var(--gray-border);
+    border-radius: 8px;
+    font-size: 14px;
+    color: var(--text);
+    background: var(--cream);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .input-row input:focus { border-color: var(--copper); }
+  .input-row button {
+    padding: 10px 18px;
+    background: var(--copper);
+    color: var(--white);
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.2s;
+  }
+  .input-row button:hover { background: var(--copper-light); }
+  .input-row button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  /* -- Calendar panel -- */
+  .cal-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+    text-align: center;
+    font-size: 13px;
+  }
+  .cal-grid .day-label {
+    font-weight: 700;
+    color: var(--text-muted);
+    padding: 4px 0;
+    font-size: 11px;
+  }
+  .cal-grid .day {
+    padding: 6px 2px;
+    border-radius: 6px;
+    cursor: default;
+    transition: background 0.15s;
+    position: relative;
+  }
+  .cal-grid .day.booked {
+    background: var(--green-bg);
+    color: var(--green);
+    font-weight: 600;
+  }
+  .cal-grid .day.booked::after {
+    content: '';
+  }
+  .cal-grid .day.other-month { color: #CCC; }
+  .cal-grid .day.today { border: 2px solid var(--copper); }
+
+  .cal-month {
+    font-weight: 700;
+    margin-bottom: 10px;
+    font-size: 15px;
+    color: var(--text);
+  }
+
+  /* -- Booking slots -- */
+  .time-slots {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
+  }
+  .time-slot {
+    padding: 6px 12px;
+    border: 1.5px solid var(--gray-border);
+    border-radius: 6px;
+    font-size: 13px;
+    cursor: pointer;
+    background: var(--white);
+    color: var(--text);
+    transition: all 0.15s;
+    font-weight: 500;
+  }
+  .time-slot:hover { border-color: var(--copper); background: var(--cream); }
+  .time-slot.selected {
+    background: var(--copper);
+    color: var(--white);
+    border-color: var(--copper);
+  }
+  .time-slot.booked-slot {
+    background: var(--green-bg);
+    color: var(--green);
+    border-color: var(--green);
+    cursor: default;
+  }
+
+  /* -- Tradie panel -- */
+  .tradie-summary {
+    background: var(--cream-dark);
+    border-radius: 8px;
+    padding: 14px;
+    font-size: 13px;
+    font-family: 'SF Mono', 'Consolas', 'Monaco', monospace;
+    line-height: 1.6;
+    white-space: pre-wrap;
+    color: var(--text);
+  }
+  .tradie-summary .label {
+    color: var(--copper);
+    font-weight: 700;
+  }
+
+  /* -- Reset button -- */
+  .reset-btn {
+    display: block;
+    margin: 0 auto 32px;
+    padding: 8px 20px;
+    background: var(--white);
+    border: 1.5px solid var(--gray-border);
+    border-radius: 8px;
+    color: var(--text-muted);
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .reset-btn:hover { border-color: var(--copper); color: var(--copper); }
+
+  /* -- Progress steps -- */
+  .steps {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 24px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .step {
+    flex: 1;
+    min-width: 60px;
+    text-align: center;
+    padding: 8px 6px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    background: var(--white);
+    border: 1.5px solid var(--gray-border);
+    color: var(--text-muted);
+    transition: all 0.3s;
+  }
+  .step.active {
+    background: var(--copper);
+    color: var(--white);
+    border-color: var(--copper);
+  }
+  .step.done {
+    background: var(--green-bg);
+    color: var(--green);
+    border-color: var(--green);
+  }
+
+  /* Typing indicator */
+  .typing { display: flex; gap: 4px; padding: 8px 0; align-self: flex-start; }
+  .typing span {
+    width: 8px; height: 8px;
+    background: var(--text-muted);
+    border-radius: 99px;
+    animation: bounce 1.2s infinite;
+  }
+  .typing span:nth-child(2) { animation-delay: 0.15s; }
+  .typing span:nth-child(3) { animation-delay: 0.3s; }
+  @keyframes bounce {
+    0%, 60%, 100% { transform: translateY(0); opacity: 0.3; }
+    30% { transform: translateY(-6px); opacity: 1; }
+  }
+</style>
+</head>
+<body>
+
+<div class="demo-banner">DEMO — Live Build (not connected to a real tradie account)</div>
+
+<div class="header">
+  <h1>Tradie<span>Flow</span> — Phone-Free Assistant</h1>
+  <span class="badge">Demo</span>
+</div>
+<div class="subtitle">A simulated walkthrough: client SMS → AI qualifies → books → tradie notified</div>
+
+<div class="steps" id="steps">
+  <div class="step active" id="step-1">1. Client messages</div>
+  <div class="step" id="step-2">2. AI qualifies</div>
+  <div class="step" id="step-3">3. Propose slots</div>
+  <div class="step" id="step-4">4. Confirmed</div>
+  <div class="step" id="step-5">5. Tradie notified</div>
+</div>
+
+<div class="main">
+  <!-- LEFT: SMS chat -->
+  <div class="panel">
+    <div class="panel-header">
+      <span class="dot client"></span> Client SMS Chat — You are the client
+    </div>
+    <div class="panel-body" id="chat-body">
+      <div class="bubble ai">
+        <div class="sender">TradieFlow Assistant</div>
+        Welcome to demo mode. Type a message as if you're a client with an electrical issue. Try something like:<br><br><em>"I've got a safety switch that keeps tripping. Can you come take a look?"</em>
+        <div class="time">Now</div>
+      </div>
+    </div>
+    <div class="input-row">
+      <input type="text" id="chat-input" placeholder="Type your message as the client…" autofocus>
+      <button id="send-btn">Send</button>
+    </div>
+  </div>
+
+  <!-- RIGHT: Calendar + Tradie summary -->
+  <div style="display:flex;flex-direction:column;gap:20px;">
+    <div class="panel">
+      <div class="panel-header">
+        <span class="dot ai"></span> Simulated Calendar — Booker Electric
+      </div>
+      <div class="panel-body" id="cal-body" style="max-height:280px;">
+        <div class="cal-month" id="cal-month"></div>
+        <div class="cal-grid" id="cal-grid"></div>
+        <div class="time-slots" id="time-slots"></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header">
+        <span class="dot tradie"></span> Tradie Summary (SMS to tradie)
+      </div>
+      <div class="panel-body" id="tradie-body" style="max-height:200px;">
+        <div class="tradie-summary" id="tradie-summary">Waiting for a completed booking…</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<button class="reset-btn" onclick="resetDemo()">↺ Reset Demo</button>
+
+<script>
+// ── State ──
+const TRADIE_NAME = 'Booker Electric';
+const SERVICE_AREAS = new Set([
+  'carindale','carina','carina heights','camp hill','cannon hill','morningside',
+  'bulimba','hawthorne','balmoral','norman park','seven hills','coorparoo',
+  'holland park','holland park west','mount gravatt','mount gravatt east',
+  'mansfield','wishart','upper mount gravatt','eight mile plains',
+  'tingalpa','belmont','gumdale','wakerley','manly','manly west','wynnum','wynnum west',
+  'loxford','brisbane','morningside','murarrie','hemmant'
+]);
+
+let conversationStep = 0; // 0=greeting sent, 1=asked suburb, 2=confirmed coverage+asked details, 3=proposed slots, 4=confirmed
+let clientSuburb = '';
+let clientName = '';
+let selectedSlot = null;
+
+// Pre-generated "available slots" for the demo
+const AVAILABLE_SLOTS = [
+  { day: 'Wed 18 Jun', time: '8:00 AM – 10:00 AM' },
+  { day: 'Wed 18 Jun', time: '1:00 PM – 3:00 PM' },
+  { day: 'Thu 19 Jun', time: '9:00 AM – 11:00 AM' },
+  { day: 'Fri 20 Jun', time: '7:00 AM – 9:00 AM' },
+];
+
+// Simulate some already-booked days
+const BOOKED_DAYS = [16, 17, 23, 24]; // dates in June 2026 that are booked
+
+// ── Helpers ──
+function scrollChat() {
+  const body = document.getElementById('chat-body');
+  body.scrollTop = body.scrollHeight;
+}
+
+function addChatBubble(sender, text) {
+  const body = document.getElementById('chat-body');
+  const div = document.createElement('div');
+  div.className = 'bubble ' + sender;
+  const now = new Date();
+  const time = now.toLocaleTimeString('en-AU', { hour: 'numeric', minute: '2-digit', hour12: true });
+  if (sender === 'client') {
+    div.innerHTML = text + '<div class="time">' + time + '</div>';
+  } else {
+    const label = sender === 'ai' ? 'TradieFlow Assistant' : TRADIE_NAME;
+    div.innerHTML = '<div class="sender">' + label + '</div>' + text + '<div class="time">' + time + '</div>';
+  }
+  body.appendChild(div);
+  scrollChat();
+}
+
+function showTyping() {
+  const body = document.getElementById('chat-body');
+  const div = document.createElement('div');
+  div.className = 'typing';
+  div.id = 'typing-indicator';
+  div.innerHTML = '<span></span><span></span><span></span>';
+  body.appendChild(div);
+  scrollChat();
+}
+
+function removeTyping() {
+  const el = document.getElementById('typing-indicator');
+  if (el) el.remove();
+}
+
+function setStep(n) {
+  conversationStep = n;
+  for (let i = 1; i <= 5; i++) {
+    const el = document.getElementById('step-' + i);
+    el.className = 'step';
+    if (i < n) el.classList.add('done');
+    if (i === n) el.classList.add('active');
+  }
+}
+
+function disableInput() {
+  document.getElementById('chat-input').disabled = true;
+  document.getElementById('send-btn').disabled = true;
+}
+function enableInput() {
+  document.getElementById('chat-input').disabled = false;
+  document.getElementById('send-btn').disabled = false;
+  document.getElementById('chat-input').focus();
+}
+
+function extractName(text) {
+  const patterns = [
+    /(?:my name is|i'm|i am|this is|it's|its)\s+(.+?)(?:[.,!?]|$)/i,
+    /^(.+?)(?: here| speaking| calling)/i,
+  ];
+  for (const p of patterns) {
+    const m = text.match(p);
+    if (m) {
+      const words = m[1].trim().split(/\s+/);
+      return words.slice(0, 2).map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
+    }
+  }
+  return '';
+}
+
+function extractSuburb(text) {
+  const clean = text.toLowerCase().replace(/[^\w\s-]/g, '');
+  for (const area of SERVICE_AREAS) {
+    if (clean.includes(area)) return area;
+  }
+  // Check for exact match of any word
+  const words = clean.split(/\s+/);
+  for (const w of words) {
+    if (SERVICE_AREAS.has(w)) return w;
+  }
+  return clean.trim(); // return whatever they typed
+}
+
+// ── Calendar rendering ──
+function renderCalendar() {
+  const monthEl = document.getElementById('cal-month');
+  const gridEl = document.getElementById('cal-grid');
+  // June 2026
+  monthEl.textContent = 'June 2026';
+  const days = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  let html = days.map(d => '<div class="day-label">' + d + '</div>').join('');
+
+  // June 2026: 1 = Monday
+  for (let d = 1; d <= 30; d++) {
+    const date = new Date(2026, 5, d);
+    let cls = 'day';
+    if (BOOKED_DAYS.includes(d)) cls += ' booked';
+    // Mark 15 (Mon) as today for demo
+    if (d === 15) cls += ' today';
+    // Highlight available slots (18, 19, 20)
+    if ([18, 19, 20].includes(d) && conversationStep >= 3) cls += ' booked';
+    html += '<div class="' + cls + '">' + d + '</div>';
+  }
+  gridEl.innerHTML = html;
+
+  // Render time slots if at step 3+
+  const slotsEl = document.getElementById('time-slots');
+  if (conversationStep >= 3 && conversationStep < 4) {
+    slotsEl.innerHTML = AVAILABLE_SLOTS.map((s, i) =>
+      '<div class="time-slot" onclick="pickSlot(' + i + ', this)" id="slot-' + i + '">' +
+      s.day + '<br>' + s.time + '</div>'
+    ).join('');
+  } else if (conversationStep >= 4 && selectedSlot !== null) {
+    const s = AVAILABLE_SLOTS[selectedSlot];
+    slotsEl.innerHTML = '<div class="time-slot booked-slot">' + s.day + '<br>' + s.time + ' ✓</div>';
+  } else {
+    slotsEl.innerHTML = '';
+  }
+}
+
+function pickSlot(index, el) {
+  // Deselect all
+  document.querySelectorAll('.time-slot').forEach(s => s.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedSlot = index;
+}
+
+// ── Tradie summary update ──
+function updateTradieSummary() {
+  const el = document.getElementById('tradie-summary');
+  const slotText = selectedSlot !== null
+    ? AVAILABLE_SLOTS[selectedSlot].day + ' ' + AVAILABLE_SLOTS[selectedSlot].time
+    : '—';
+  el.textContent =
+    '══════════════════════════════\n' +
+    '  NEW BOOKING — Booker Electric\n' +
+    '══════════════════════════════\n' +
+    'Client:  ' + (clientName || '—') + '\n' +
+    'Phone:   0400 123 456\n' +
+    'Suburb:  ' + (clientSuburb || '—') + '\n' +
+    'Job:     ' + (conversationStep >= 2 ? 'Electrical — safety switch' : '—') + '\n' +
+    'When:    ' + slotText + '\n' +
+    '══════════════════════════════\n' +
+    'Reply BOOK to confirm or call\n' +
+    'client to discuss.';
+}
+
+// ── AI response logic ──
+function aiRespond(clientMsg) {
+  const msg = clientMsg.trim();
+  disableInput();
+  showTyping();
+
+  const delay = 800 + Math.random() * 700;
+
+  setTimeout(() => {
+    removeTyping();
+
+    if (conversationStep === 0) {
+      // First message: ask for suburb
+      clientName = extractName(msg);
+      addChatBubble('ai',
+        "Thanks for reaching out! Before I check availability, can you tell me which suburb you're in? " +
+        "I need to confirm we cover your area."
+      );
+      setStep(1);
+      conversationStep = 1;
+    } else if (conversationStep === 1) {
+      // Client gave suburb
+      const raw = extractSuburb(msg);
+      clientSuburb = raw.charAt(0).toUpperCase() + raw.slice(1);
+      const suburbLower = raw.toLowerCase();
+      const inArea = SERVICE_AREAS.has(suburbLower) || [...SERVICE_AREAS].some(a => suburbLower.includes(a) || a.includes(suburbLower));
+
+      if (inArea) {
+        addChatBubble('ai',
+          "Yes, we cover <strong>" + clientSuburb + "</strong> — you're in our service area. " +
+          "Can you tell me a bit more about the electrical issue? What's happening, and how urgent is it? " +
+          "Also, what days or times generally work for you?"
+        );
+        setStep(2);
+        conversationStep = 2;
+      } else {
+        addChatBubble('ai',
+          "I'm sorry — <strong>" + clientSuburb + "</strong> is outside our regular service area at the moment. " +
+          "We cover Brisbane's inner-east and southside suburbs (Carindale, Carina, Camp Hill, Coorparoo, Mount Gravatt, and surrounds). " +
+          "I can pass your details on in case we expand, or if you know a nearby suburb you could meet us at, let me know."
+        );
+        // Stay at step 1; they can try another suburb
+      }
+    } else if (conversationStep === 2) {
+      // Client gave job details
+      if (!clientName) clientName = extractName(msg) || 'Client';
+      addChatBubble('ai',
+        "Got it — that helps a lot. I've checked our schedule and here are the next available windows for an electrician to come out:"
+      );
+      renderCalendar();
+      conversationStep = 3;
+      setStep(3);
+    } else if (conversationStep === 3) {
+      // Client should have picked a slot via the calendar UI
+      // But if they typed something, check if they confirmed
+      const confirmWords = ['yes', 'book', 'confirm', 'sounds good', 'that works', 'great', 'perfect', 'ok', 'okay', 'yep', 'yeah', 'sure', 'go ahead'];
+      const isConfirm = confirmWords.some(w => msg.toLowerCase().includes(w));
+
+      if (isConfirm && selectedSlot !== null) {
+        confirmBooking();
+      } else if (isConfirm) {
+        addChatBubble('ai', "Great! Which time slot works best for you? Tap one of the options in the calendar panel →");
+      } else {
+        // They might be giving more info
+        addChatBubble('ai',
+          "Thanks for the extra info. Which of the available time slots works for you? " +
+          "Tap one in the calendar panel, then type 'yes' or 'book it' to confirm."
+        );
+      }
+    } else if (conversationStep === 4) {
+      addChatBubble('ai', "This demo booking is already confirmed. Tap <strong>Reset Demo</strong> to run through it again.");
+    }
+
+    enableInput();
+  }, delay);
+}
+
+function confirmBooking() {
+  const slot = AVAILABLE_SLOTS[selectedSlot];
+  addChatBubble('ai',
+    "All confirmed! <strong>" + slot.day + ", " + slot.time + "</strong> is booked in. " +
+    "Our electrician will give you a call about 30 minutes before arriving. " +
+    "If anything changes, just reply to this SMS."
+  );
+  addChatBubble('ai',
+    "I've sent a summary to " + TRADIE_NAME + " so they know you're booked in. Thanks " +
+    (clientName || '') + "!"
+  );
+  setStep(4);
+  conversationStep = 4;
+  updateTradieSummary();
+  renderCalendar();
+}
+
+// ── Input handler ──
+function handleSend() {
+  const input = document.getElementById('chat-input');
+  const text = input.value.trim();
+  if (!text) return;
+
+  addChatBubble('client', text);
+  input.value = '';
+
+  if (conversationStep >= 4) {
+    addChatBubble('ai', "This demo is complete. Tap <strong>Reset Demo</strong> to try again.");
+    return;
+  }
+
+  aiRespond(text);
+}
+
+document.getElementById('send-btn').addEventListener('click', handleSend);
+document.getElementById('chat-input').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') handleSend();
+});
+
+// ── Reset ──
+function resetDemo() {
+  conversationStep = 0;
+  clientSuburb = '';
+  clientName = '';
+  selectedSlot = null;
+  document.getElementById('chat-body').innerHTML = '';
+  document.getElementById('tradie-summary').textContent = 'Waiting for a completed booking…';
+  setStep(0);
+
+  addChatBubble('ai',
+    "Welcome to demo mode. Type a message as if you're a client with an electrical issue. Try something like:<br><br>" +
+    "<em>\"I've got a safety switch that keeps tripping. Can you come take a look?\"</em>"
+  );
+
+  renderCalendar();
+  enableInput();
+  document.getElementById('chat-input').value = '';
+  document.getElementById('chat-input').focus();
+}
+
+// ── Init ──
+renderCalendar();
+</script>
+</body>
+</html>
