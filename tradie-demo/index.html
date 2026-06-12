@@ -203,35 +203,6 @@
   .input-row button:hover { background: var(--copper-light); }
   .input-row button:disabled { opacity: 0.5; cursor: not-allowed; }
 
-  /* -- Quick-reply slot buttons inside chat -- */
-  .slot-options {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    margin-top: 8px;
-  }
-  .slot-option-btn {
-    display: block;
-    width: 100%;
-    padding: 10px 14px;
-    text-align: left;
-    background: var(--white);
-    border: 1.5px solid var(--copper);
-    border-radius: 8px;
-    color: var(--text);
-    cursor: pointer;
-    font-size: 13px;
-    font-weight: 500;
-    transition: all 0.15s;
-    line-height: 1.4;
-  }
-  .slot-option-btn:hover { background: var(--cream); border-color: var(--copper-light); }
-  .slot-option-btn.selected {
-    background: var(--copper);
-    color: var(--white);
-    font-weight: 700;
-  }
-
   /* -- Calendar panel -- */
   .cal-grid {
     display: grid;
@@ -464,10 +435,10 @@ let selectedSlot = null;
 
 // Pre-generated "available slots" for the demo
 const AVAILABLE_SLOTS = [
-  { day: 'Wed 18 Jun', time: '8:00 AM – 10:00 AM' },
-  { day: 'Wed 18 Jun', time: '1:00 PM – 3:00 PM' },
-  { day: 'Thu 19 Jun', time: '9:00 AM – 11:00 AM' },
-  { day: 'Fri 20 Jun', time: '7:00 AM – 9:00 AM' },
+  { day: 'Wed 18 Jun', time: '8:00 AM' },
+  { day: 'Wed 18 Jun', time: '1:00 PM' },
+  { day: 'Thu 19 Jun', time: '9:00 AM' },
+  { day: 'Fri 20 Jun', time: '7:00 AM' },
 ];
 
 // Simulate some already-booked days
@@ -599,21 +570,6 @@ function pickSlot(index, el) {
   // Deselect all (in calendar panel)
   document.querySelectorAll('.time-slot').forEach(s => s.classList.remove('selected'));
   if (el) el.classList.add('selected');
-  // Also sync inline chat buttons
-  document.querySelectorAll('.slot-option-btn').forEach(b => b.classList.remove('selected'));
-  const chatBtn = document.getElementById('chat-slot-' + index);
-  if (chatBtn) chatBtn.classList.add('selected');
-  selectedSlot = index;
-}
-
-function pickSlotInline(index, el) {
-  // Deselect all inline buttons
-  document.querySelectorAll('.slot-option-btn').forEach(b => b.classList.remove('selected'));
-  if (el) el.classList.add('selected');
-  // Also sync calendar panel
-  document.querySelectorAll('.time-slot').forEach(s => s.classList.remove('selected'));
-  const calSlot = document.getElementById('slot-' + index);
-  if (calSlot) calSlot.classList.add('selected');
   selectedSlot = index;
 }
 
@@ -686,43 +642,42 @@ function aiRespond(clientMsg) {
       renderCalendar();
       conversationStep = 3;
       setStep(3);
-      // Build slot list inline in the chat bubble
+      // Build slot list as plain text
       const slotList = AVAILABLE_SLOTS.map((s, i) =>
-        '<button class="slot-option-btn" onclick="pickSlotInline(' + i + ', this)" id="chat-slot-' + i + '">' +
-        '<strong>' + (i + 1) + '.</strong> ' + s.day + ', ' + s.time +
-        '</button>'
-      ).join('');
+        (i + 1) + '. ' + s.day + ' at ' + s.time
+      ).join('<br>');
       addChatBubble('ai',
-        "Got it — that helps a lot. Here are the next available windows for an electrician to come out:" +
-        '<div class="slot-options">' + slotList + '</div>' +
-        "Tap one of the slots above, then type <strong>yes</strong> or <strong>book it</strong> to confirm."
+        "Got it — that helps a lot. Here are the next available times for an electrician to come out:<br><br>" +
+        slotList + "<br><br>" +
+        "Reply with the slot number (1–4) then <strong>yes</strong> to confirm."
       );
     } else if (conversationStep === 3) {
-      // Client should have picked a slot, or is typing confirmation
       const confirmWords = ['yes', 'book', 'confirm', 'sounds good', 'that works', 'great', 'perfect', 'ok', 'okay', 'yep', 'yeah', 'sure', 'go ahead'];
       const isConfirm = confirmWords.some(w => msg.toLowerCase().includes(w));
 
-      // Also check if they typed a slot number (1-4)
-      const slotNum = parseInt(msg.trim());
-      if (slotNum >= 1 && slotNum <= AVAILABLE_SLOTS.length) {
+      // Check if they typed a slot number (1-4)
+      const slotMatch = msg.match(/\b([1-4])\b/);
+      const slotNum = slotMatch ? parseInt(slotMatch[1]) : null;
+
+      if (slotNum && isConfirm) {
         selectedSlot = slotNum - 1;
-        // Deselect all and select the right one
-        document.querySelectorAll('.slot-option-btn').forEach(b => b.classList.remove('selected'));
-        const targetBtn = document.getElementById('chat-slot-' + (slotNum - 1));
-        if (targetBtn) targetBtn.classList.add('selected');
+        confirmBooking();
+        return;
+      } else if (slotNum) {
+        selectedSlot = slotNum - 1;
         addChatBubble('ai',
-          "Slot " + slotNum + " selected: <strong>" + AVAILABLE_SLOTS[slotNum - 1].day + ", " +
+          "Slot " + slotNum + " selected: <strong>" + AVAILABLE_SLOTS[slotNum - 1].day + " at " +
           AVAILABLE_SLOTS[slotNum - 1].time + "</strong>. Type <strong>yes</strong> to confirm the booking."
         );
       } else if (isConfirm && selectedSlot !== null) {
         confirmBooking();
       } else if (isConfirm) {
         addChatBubble('ai',
-          "Which time slot works best? Tap one of the options above, or type the slot number (1–4)."
+          "Which time slot works best? Reply with the number (1–4) and then <strong>yes</strong>."
         );
       } else {
         addChatBubble('ai',
-          "Thanks. Which of the available time slots works for you? Tap a slot above or type its number (1–4), then type <strong>yes</strong> to confirm."
+          "Thanks. Which time slot works for you? Reply <strong>2 yes</strong> (for example) to pick a slot and confirm."
         );
       }
     } else if (conversationStep === 4) {
@@ -736,7 +691,7 @@ function aiRespond(clientMsg) {
 function confirmBooking() {
   const slot = AVAILABLE_SLOTS[selectedSlot];
   addChatBubble('ai',
-    "All confirmed! <strong>" + slot.day + ", " + slot.time + "</strong> is booked in. " +
+    "All confirmed! <strong>" + slot.day + " at " + slot.time + "</strong> is booked in. " +
     "Our electrician will give you a call about 30 minutes before arriving. " +
     "If anything changes, just reply to this SMS."
   );
@@ -784,7 +739,8 @@ function resetDemo() {
 
   addChatBubble('ai',
     "Welcome to demo mode. Type a message as if you're a client with an electrical issue. Try something like:<br><br>" +
-    "<em>\"I've got a safety switch that keeps tripping. Can you come take a look?\"</em>"
+    "<em>\"I've got a safety switch that keeps tripping. Can you come take a look?\"</em><br><br>" +
+    "When you get to time slots, reply with a number and <strong>yes</strong> — e.g. <strong>2 yes</strong>."
   );
 
   renderCalendar();
