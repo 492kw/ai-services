@@ -203,6 +203,35 @@
   .input-row button:hover { background: var(--copper-light); }
   .input-row button:disabled { opacity: 0.5; cursor: not-allowed; }
 
+  /* -- Quick-reply slot buttons inside chat -- */
+  .slot-options {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 8px;
+  }
+  .slot-option-btn {
+    display: block;
+    width: 100%;
+    padding: 10px 14px;
+    text-align: left;
+    background: var(--white);
+    border: 1.5px solid var(--copper);
+    border-radius: 8px;
+    color: var(--text);
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.15s;
+    line-height: 1.4;
+  }
+  .slot-option-btn:hover { background: var(--cream); border-color: var(--copper-light); }
+  .slot-option-btn.selected {
+    background: var(--copper);
+    color: var(--white);
+    font-weight: 700;
+  }
+
   /* -- Calendar panel -- */
   .cal-grid {
     display: grid;
@@ -567,9 +596,24 @@ function renderCalendar() {
 }
 
 function pickSlot(index, el) {
-  // Deselect all
+  // Deselect all (in calendar panel)
   document.querySelectorAll('.time-slot').forEach(s => s.classList.remove('selected'));
-  el.classList.add('selected');
+  if (el) el.classList.add('selected');
+  // Also sync inline chat buttons
+  document.querySelectorAll('.slot-option-btn').forEach(b => b.classList.remove('selected'));
+  const chatBtn = document.getElementById('chat-slot-' + index);
+  if (chatBtn) chatBtn.classList.add('selected');
+  selectedSlot = index;
+}
+
+function pickSlotInline(index, el) {
+  // Deselect all inline buttons
+  document.querySelectorAll('.slot-option-btn').forEach(b => b.classList.remove('selected'));
+  if (el) el.classList.add('selected');
+  // Also sync calendar panel
+  document.querySelectorAll('.time-slot').forEach(s => s.classList.remove('selected'));
+  const calSlot = document.getElementById('slot-' + index);
+  if (calSlot) calSlot.classList.add('selected');
   selectedSlot = index;
 }
 
@@ -639,27 +683,46 @@ function aiRespond(clientMsg) {
     } else if (conversationStep === 2) {
       // Client gave job details
       if (!clientName) clientName = extractName(msg) || 'Client';
-      addChatBubble('ai',
-        "Got it — that helps a lot. I've checked our schedule and here are the next available windows for an electrician to come out:"
-      );
       renderCalendar();
       conversationStep = 3;
       setStep(3);
+      // Build slot list inline in the chat bubble
+      const slotList = AVAILABLE_SLOTS.map((s, i) =>
+        '<button class="slot-option-btn" onclick="pickSlotInline(' + i + ', this)" id="chat-slot-' + i + '">' +
+        '<strong>' + (i + 1) + '.</strong> ' + s.day + ', ' + s.time +
+        '</button>'
+      ).join('');
+      addChatBubble('ai',
+        "Got it — that helps a lot. Here are the next available windows for an electrician to come out:" +
+        '<div class="slot-options">' + slotList + '</div>' +
+        "Tap one of the slots above, then type <strong>yes</strong> or <strong>book it</strong> to confirm."
+      );
     } else if (conversationStep === 3) {
-      // Client should have picked a slot via the calendar UI
-      // But if they typed something, check if they confirmed
+      // Client should have picked a slot, or is typing confirmation
       const confirmWords = ['yes', 'book', 'confirm', 'sounds good', 'that works', 'great', 'perfect', 'ok', 'okay', 'yep', 'yeah', 'sure', 'go ahead'];
       const isConfirm = confirmWords.some(w => msg.toLowerCase().includes(w));
 
-      if (isConfirm && selectedSlot !== null) {
+      // Also check if they typed a slot number (1-4)
+      const slotNum = parseInt(msg.trim());
+      if (slotNum >= 1 && slotNum <= AVAILABLE_SLOTS.length) {
+        selectedSlot = slotNum - 1;
+        // Deselect all and select the right one
+        document.querySelectorAll('.slot-option-btn').forEach(b => b.classList.remove('selected'));
+        const targetBtn = document.getElementById('chat-slot-' + (slotNum - 1));
+        if (targetBtn) targetBtn.classList.add('selected');
+        addChatBubble('ai',
+          "Slot " + slotNum + " selected: <strong>" + AVAILABLE_SLOTS[slotNum - 1].day + ", " +
+          AVAILABLE_SLOTS[slotNum - 1].time + "</strong>. Type <strong>yes</strong> to confirm the booking."
+        );
+      } else if (isConfirm && selectedSlot !== null) {
         confirmBooking();
       } else if (isConfirm) {
-        addChatBubble('ai', "Great! Which time slot works best for you? Tap one of the options in the calendar panel →");
-      } else {
-        // They might be giving more info
         addChatBubble('ai',
-          "Thanks for the extra info. Which of the available time slots works for you? " +
-          "Tap one in the calendar panel, then type 'yes' or 'book it' to confirm."
+          "Which time slot works best? Tap one of the options above, or type the slot number (1–4)."
+        );
+      } else {
+        addChatBubble('ai',
+          "Thanks. Which of the available time slots works for you? Tap a slot above or type its number (1–4), then type <strong>yes</strong> to confirm."
         );
       }
     } else if (conversationStep === 4) {
