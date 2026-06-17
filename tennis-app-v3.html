@@ -1,0 +1,1895 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UQ Social Tennis</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;1,9..144,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f5f2ed; --surface: #ffffff; --border: #e0dbd3; --text: #1a1714;
+    --muted: #8a847c; --accent: #2d6a4f; --accent-light: #e8f4ee;
+    --blue: #1e6091;   --blue-light: #ddeef8;
+    --green: #1e7a3a;  --green-light: #d8f0e0;
+    --yellow: #b5860d; --yellow-light: #fdf3d0;
+    --red: #a63a2a;    --red-light: #fce8e4;
+    --white-level: #9a9690; --white-level-light: #f0eeec;
+    --radius: 10px; --mono: 'DM Mono', monospace; --serif: 'Fraunces', serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--mono); background: var(--bg); color: var(--text); min-height: 100vh; }
+
+  /* NAV */
+  .nav { background: var(--text); color: #fff; display: flex; align-items: center; justify-content: space-between; padding: 0 24px; height: 56px; position: sticky; top: 0; z-index: 100; }
+  .nav-title { font-family: var(--serif); font-size: 20px; font-weight: 300; }
+  .nav-title span { color: #7ec8a0; font-style: italic; }
+  .nav-tabs { display: flex; gap: 4px; }
+  .nav-tab { padding: 6px 16px; border-radius: 6px; border: none; background: transparent; color: #aaa; cursor: pointer; font-family: var(--mono); font-size: 12px; letter-spacing: 0.05em; text-transform: uppercase; transition: all 0.15s; }
+  .nav-tab.active { background: #fff2; color: #fff; }
+  .nav-tab:hover:not(.active) { color: #ddd; }
+  .session-time { font-size: 12px; color: #aaa; }
+  .session-time span { color: #7ec8a0; }
+
+  /* LAYOUT */
+  .view { display: none; padding: 24px; max-width: 1400px; margin: 0 auto; }
+  .view.active { display: block; }
+  .operator-grid { display: grid; grid-template-columns: 360px 1fr; gap: 20px; align-items: start; }
+
+  /* PANELS */
+  .panel { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+  .panel-header { padding: 14px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+  .panel-title { font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); font-weight: 500; }
+  .panel-body { padding: 16px; }
+
+  /* FORM ELEMENTS */
+  input[type="text"] { padding: 10px 14px; border: 1px solid var(--border); border-radius: 8px; font-family: var(--mono); font-size: 14px; background: var(--bg); color: var(--text); outline: none; transition: border-color 0.15s; width: 100%; }
+  input[type="text"]:focus { border-color: var(--accent); }
+  .form-mb { margin-bottom: 12px; }
+
+  /* LEVEL BUTTONS */
+  .level-select { display: flex; gap: 5px; margin-bottom: 12px; flex-wrap: wrap; }
+  .level-btn { flex: 1; min-width: 52px; padding: 7px 3px; border-radius: 8px; border: 2px solid transparent; cursor: pointer; font-family: var(--mono); font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.04em; transition: all 0.15s; text-align: center; }
+  .level-btn.blue   { background: var(--blue-light);         color: var(--blue); }
+  .level-btn.blue.selected   { border-color: var(--blue); }
+  .level-btn.green  { background: var(--green-light);        color: var(--green); }
+  .level-btn.green.selected  { border-color: var(--green); }
+  .level-btn.yellow { background: var(--yellow-light);       color: var(--yellow); }
+  .level-btn.yellow.selected { border-color: var(--yellow); }
+  .level-btn.red    { background: var(--red-light);          color: var(--red); }
+  .level-btn.red.selected    { border-color: var(--red); }
+  .level-btn.white  { background: var(--white-level-light);  color: var(--white-level); }
+  .level-btn.white.selected  { border-color: var(--white-level); }
+
+  /* BUTTONS */
+  .btn { width: 100%; padding: 11px; border-radius: 8px; border: none; cursor: pointer; font-family: var(--mono); font-size: 13px; font-weight: 500; transition: all 0.15s; }
+  .btn-primary { background: var(--text); color: #fff; }
+  .btn-primary:hover { background: #333; }
+  .btn-sm { padding: 5px 10px; font-size: 11px; border-radius: 6px; border: none; cursor: pointer; font-family: var(--mono); font-weight: 500; transition: all 0.15s; }
+  .btn-danger { background: var(--red-light); color: var(--red); }
+  .btn-danger:hover { background: #f8d5cf; }
+  .btn-accent { background: var(--accent-light); color: var(--accent); }
+  .btn-accent:hover { background: #d4eadf; }
+  .btn-edit { background: #f0eeec; color: #6a6560; }
+  .btn-edit:hover { background: #e4e0dc; }
+
+  /* CONTROLS BAR */
+  .controls-bar { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; padding: 12px 18px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); }
+  .controls-bar label { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; white-space: nowrap; }
+  .court-count-ctrl { display: flex; align-items: center; gap: 10px; }
+  .court-count-ctrl button { width: 28px; height: 28px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg); cursor: pointer; font-size: 16px; font-family: var(--mono); transition: all 0.15s; }
+  .court-count-ctrl button:hover { background: var(--border); }
+  .court-count-ctrl span { font-size: 18px; font-weight: 500; min-width: 22px; text-align: center; }
+  .bar-divider { width: 1px; height: 26px; background: var(--border); flex-shrink: 0; }
+  .autofill-hint { flex: 1; font-size: 11px; color: var(--muted); }
+  .btn-autofill { padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-family: var(--mono); font-size: 12px; font-weight: 500; background: var(--text); color: #fff; white-space: nowrap; transition: all 0.15s; }
+  .btn-autofill:hover { background: #333; }
+
+  /* AUTOFILL PREVIEW */
+  .autofill-preview { display: none; background: var(--accent-light); border: 1px solid #b8d8c8; border-radius: var(--radius); padding: 14px 18px; margin-bottom: 16px; }
+  .autofill-preview.visible { display: block; }
+  .autofill-preview-header { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent); font-weight: 500; margin-bottom: 10px; }
+  .preview-group { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 8px; margin-bottom: 6px; background: #fff; border: 1px solid #c8e4d8; flex-wrap: wrap; position: relative; transition: opacity 0.2s; }
+  .preview-group.dismissed { display: none; }
+  .preview-court-label { font-size: 12px; font-weight: 500; min-width: 62px; }
+  .preview-players { display: flex; flex-wrap: wrap; gap: 5px; flex: 1; }
+  .preview-pill { display: inline-flex; align-items: center; gap: 5px; padding: 3px 9px; border-radius: 20px; font-size: 11px; background: var(--accent-light); border: 1px solid #b8d8c8; }
+  .preview-remove { background: none; border: none; cursor: pointer; color: #aaa; font-size: 16px; padding: 0 2px; line-height: 1; transition: color 0.15s; flex-shrink: 0; }
+  .preview-remove:hover { color: var(--red); }
+  .preview-actions { display: flex; gap: 8px; margin-top: 10px; align-items: center; }
+  .preview-remaining { font-size: 11px; color: var(--muted); flex: 1; }
+  .btn-confirm-auto { padding: 8px 18px; border-radius: 7px; border: none; cursor: pointer; font-family: var(--mono); font-size: 12px; font-weight: 500; background: var(--accent); color: #fff; }
+  .btn-confirm-auto:hover { background: #235a40; }
+  .btn-cancel-auto { padding: 8px 14px; border-radius: 7px; border: 1px solid #b8d8c8; cursor: pointer; font-family: var(--mono); font-size: 12px; background: transparent; color: var(--accent); }
+  .btn-rerandomise { padding: 8px 14px; border-radius: 7px; border: 1px solid #b8d8c8; cursor: pointer; font-family: var(--mono); font-size: 12px; background: #fff; color: var(--accent); font-weight: 500; transition: all 0.15s; }
+  .btn-rerandomise:hover { background: var(--accent-light); }
+  .match-tag { font-size: 10px; padding: 1px 7px; border-radius: 10px; font-weight: 500; white-space: nowrap; }
+  .match-pure    { background: var(--accent-light); color: var(--accent); }
+  .match-mixed   { background: var(--yellow-light); color: var(--yellow); }
+  .no-suggestions { font-size: 12px; color: var(--muted); text-align: center; padding: 10px 0; }
+
+  /* QUEUE */
+  .queue-list { display: flex; flex-direction: column; gap: 6px; max-height: 460px; overflow-y: auto; }
+  .queue-item { display: flex; align-items: center; gap: 7px; padding: 9px 12px; background: var(--bg); border-radius: 8px; border: 1px solid var(--border); }
+  .level-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .dot-blue   { background: var(--blue); }
+  .dot-green  { background: var(--green); }
+  .dot-yellow { background: var(--yellow); }
+  .dot-red    { background: var(--red); }
+  .dot-white  { background: var(--white-level); }
+  .queue-name { flex: 1; font-size: 13px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .queue-meta { font-size: 10px; color: var(--muted); white-space: nowrap; }
+  .rating-badge { font-size: 10px; font-weight: 500; padding: 2px 5px; border-radius: 4px; background: #fef9e7; color: #b8860b; border: 1px solid #f0d060; white-space: nowrap; letter-spacing: -1px; }
+  .rating-badge.unrated { background: var(--white-level-light); color: var(--white-level); border-color: var(--border); letter-spacing: 0; }
+
+  /* PROMO BADGE */
+  .promo-badge { font-size: 9px; font-weight: 700; padding: 2px 6px; border-radius: 4px; background: var(--green-light); color: var(--green); border: 1px solid #a8d8b8; white-space: nowrap; letter-spacing: 0.03em; }
+  .elo-badge { font-size: 9px; color: var(--muted); white-space: nowrap; padding: 2px 5px; background: var(--bg); border-radius: 4px; border: 1px solid var(--border); }
+
+  /* INNER TABS */
+  .inner-tabs { display: flex; gap: 4px; margin-bottom: 12px; flex-wrap: wrap; }
+  .inner-tab { padding: 5px 10px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg); font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; cursor: pointer; color: var(--muted); transition: all 0.15s; }
+  .inner-tab.active { background: var(--text); color: #fff; border-color: var(--text); }
+
+  /* RESTING PANEL */
+  .rest-panel { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; margin-top: 12px; }
+  .rest-panel-header { padding: 11px 16px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; border-bottom: 1px solid transparent; transition: border-color 0.15s; }
+  .rest-panel-header.has-resting { border-bottom-color: var(--border); }
+  .rest-panel-count { display: inline-flex; align-items: center; justify-content: center; background: var(--yellow-light); color: var(--yellow); border-radius: 20px; font-size: 10px; font-weight: 700; padding: 1px 7px; margin-left: 6px; }
+  .rest-panel-body { padding: 10px 14px; display: flex; flex-direction: column; gap: 5px; }
+  .rest-item { display: flex; align-items: center; gap: 8px; padding: 7px 10px; background: var(--bg); border-radius: 7px; border: 1px solid var(--border); }
+  .rest-name { flex: 1; font-size: 13px; color: var(--muted); font-style: italic; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .btn-rejoin { padding: 3px 9px; border-radius: 6px; border: 1px solid var(--accent); background: transparent; color: var(--accent); font-family: var(--mono); font-size: 10px; font-weight: 600; cursor: pointer; white-space: nowrap; transition: background 0.15s, color 0.15s; }
+  .btn-rejoin:hover { background: var(--accent); color: #fff; }
+  .btn-rest { padding: 2px 7px; border-radius: 5px; border: 1px solid var(--border); background: transparent; color: var(--muted); font-family: var(--mono); font-size: 10px; cursor: pointer; flex-shrink: 0; transition: all 0.15s; }
+  .btn-rest:hover { border-color: var(--yellow); color: var(--yellow); }
+
+  /* COURTS */
+  .courts-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
+  .court-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; transition: border-color 0.2s; }
+  .court-card.active-court { border-color: var(--accent); }
+  .court-card-header { padding: 10px 14px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); }
+  .court-number { font-family: var(--serif); font-size: 15px; font-weight: 600; }
+  .court-status { font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; padding: 3px 8px; border-radius: 4px; }
+  .status-available { background: var(--accent-light); color: var(--accent); }
+  .status-playing { background: var(--yellow-light); color: var(--yellow); }
+  .court-players { padding: 10px 14px; min-height: 58px; }
+  .court-player-item { display: flex; align-items: center; gap: 7px; padding: 4px 0; font-size: 13px; }
+  .court-empty-msg { color: var(--muted); font-size: 12px; text-align: center; padding: 10px 0; }
+  .court-actions { padding: 8px 14px; border-top: 1px solid var(--border); display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+
+  /* TIMER BADGES — colour system reflecting court urgency */
+  .timer-badge { font-size: 10px; padding: 2px 7px; border-radius: 10px; font-weight: 500; }
+  .timer-fresh  { color: var(--muted);   background: #f0eeec; }
+  .timer-warm   { color: var(--yellow);  background: var(--yellow-light); }
+  .timer-prime  { color: var(--green);   background: var(--green-light);  font-weight: 700; }
+  .timer-overdue { color: var(--red);   background: var(--red-light);    font-weight: 700; animation: pulse-badge 1s ease-in-out infinite; }
+  @keyframes pulse-badge { 0%,100%{opacity:1} 50%{opacity:0.55} }
+
+  /* STATS */
+  .stat-row { display: flex; gap: 12px; margin-bottom: 16px; }
+  .stat-box { flex: 1; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 16px; text-align: center; }
+  .stat-num { font-size: 24px; font-family: var(--serif); font-weight: 600; }
+  .stat-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin-top: 2px; }
+
+  /* MODALS */
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 200; align-items: center; justify-content: center; }
+  .modal-overlay.open { display: flex; }
+  .modal { background: var(--surface); border-radius: 14px; width: 440px; max-width: 95vw; max-height: 90vh; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 20px 60px rgba(0,0,0,0.2); }
+  .modal-header { padding: 18px 24px 14px; border-bottom: 1px solid var(--border); display: flex; align-items: flex-start; justify-content: space-between; }
+  .modal-title { font-family: var(--serif); font-size: 18px; font-weight: 600; }
+  .modal-subtitle { font-size: 12px; color: var(--muted); margin-top: 3px; }
+  .modal-close { background: none; border: none; font-size: 22px; cursor: pointer; color: var(--muted); line-height: 1; padding: 0; }
+  .modal-body { padding: 18px 24px; overflow-y: auto; flex: 1; }
+  .modal-footer { padding: 14px 24px; border-top: 1px solid var(--border); display: flex; gap: 8px; justify-content: flex-end; }
+  .modal-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); display: block; margin-bottom: 7px; }
+
+  /* SCORE CAPTURE MODAL */
+  .score-modal { width: 520px; }
+  .team-pairing-option { display: flex; align-items: center; gap: 10px; padding: 14px 16px; border-radius: 10px; border: 2px solid var(--border); cursor: pointer; margin-bottom: 8px; transition: all 0.15s; background: var(--bg); }
+  .team-pairing-option:hover { border-color: #bbb; background: #faf9f8; }
+  .team-pairing-option.selected { border-color: var(--accent); background: var(--accent-light); }
+  .pairing-team { flex: 1; display: flex; flex-direction: column; gap: 5px; }
+  .pairing-player { display: flex; align-items: center; gap: 7px; font-size: 13px; font-weight: 500; }
+  .pairing-vs { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; padding: 0 8px; flex-shrink: 0; }
+  .score-entry { display: flex; gap: 16px; align-items: center; justify-content: center; margin: 20px 0 10px; }
+  .score-team-box { flex: 1; text-align: center; }
+  .score-team-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 8px; }
+  .score-team-names { font-size: 12px; font-weight: 500; color: var(--text); margin-bottom: 10px; min-height: 34px; }
+  .score-num-input { width: 100%; padding: 16px 8px; border: 2px solid var(--border); border-radius: 10px; font-family: var(--mono); font-size: 32px; font-weight: 600; text-align: center; background: var(--bg); color: var(--text); outline: none; transition: border-color 0.15s; }
+  .score-num-input:focus { border-color: var(--accent); }
+  .score-separator { font-size: 32px; color: var(--border); font-weight: 300; flex-shrink: 0; }
+  .score-msg { font-size: 11px; text-align: center; min-height: 18px; margin-top: 6px; }
+  .score-msg.ok  { color: var(--green); }
+  .score-msg.err { color: var(--red); }
+  .btn-back-step { padding: 8px 14px; border-radius: 7px; border: 1px solid var(--border); cursor: pointer; font-family: var(--mono); font-size: 12px; background: transparent; color: var(--muted); }
+  .btn-skip-score { padding: 8px 14px; border-radius: 7px; border: 1px solid var(--border); cursor: pointer; font-family: var(--mono); font-size: 12px; background: transparent; color: var(--muted); }
+  .elo-change-preview { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; padding: 10px 12px; background: var(--bg); border-radius: 8px; border: 1px solid var(--border); }
+  .elo-change-pill { font-size: 11px; padding: 3px 8px; border-radius: 6px; }
+  .elo-up   { background: var(--green-light);  color: var(--green); }
+  .elo-down { background: var(--red-light);    color: var(--red); }
+  .elo-zero { background: var(--bg);           color: var(--muted); border: 1px solid var(--border); }
+
+  /* PLAYER SELECT */
+  .select-player-list { display: flex; flex-direction: column; gap: 6px; }
+  .select-player-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 8px; border: 2px solid var(--border); cursor: pointer; transition: all 0.15s; }
+  .select-player-item:hover { border-color: #ccc; background: var(--bg); }
+  .select-player-item.selected { border-color: var(--accent); background: var(--accent-light); }
+  .select-player-item .player-name { flex: 1; font-size: 14px; }
+
+  /* EDIT PLAYER MODAL */
+  .edit-star-group { display: flex; gap: 3px; margin-bottom: 4px; }
+  .edit-star { background: none; border: none; cursor: pointer; font-size: 26px; color: #ddd; transition: color 0.1s; padding: 0 2px; line-height: 1; }
+  .edit-star.lit { color: #e0a800; }
+  .edit-star-hint { font-size: 11px; color: var(--muted); min-height: 16px; margin-top: 4px; }
+  .edit-section { margin-bottom: 20px; }
+
+  /* ADD TO COURT */
+  .current-on-court { margin-bottom: 12px; padding: 10px 14px; background: var(--bg); border-radius: 8px; border: 1px solid var(--border); }
+  .current-on-court-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.07em; color: var(--muted); margin-bottom: 7px; }
+  .current-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .current-chip { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; background: var(--surface); border: 1px solid var(--border); border-radius: 20px; font-size: 12px; }
+  .slots-info { font-size: 12px; color: var(--accent); font-weight: 500; margin-bottom: 8px; }
+  .add-note { font-size: 12px; color: var(--muted); margin-bottom: 12px; line-height: 1.5; }
+
+  /* DISPLAY VIEW */
+  .display-view { background: #0f1a14; min-height: 100vh; padding: 0; }
+  .display-nav { background: #0a1209; padding: 16px 32px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #1e3028; }
+  .display-title { font-family: var(--serif); font-size: 22px; font-weight: 300; color: #7ec8a0; font-style: italic; }
+  .display-clock { font-size: 28px; font-weight: 500; color: #fff; letter-spacing: 0.05em; }
+  .display-session { font-size: 12px; color: #5a8a6a; text-transform: uppercase; letter-spacing: 0.1em; }
+  .display-body { padding: 24px 32px; }
+  .display-courts-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; margin-bottom: 24px; }
+  .display-court { background: #162b1e; border: 1px solid #1e3828; border-radius: 14px; overflow: hidden; }
+  .display-court.playing { border-color: #3a7a55; }
+  .display-court-header { padding: 14px 20px; background: #0f2018; display: flex; align-items: center; justify-content: space-between; }
+  .display-court-num { font-family: var(--serif); font-size: 20px; font-weight: 600; color: #fff; }
+  .display-court-badge { font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; padding: 4px 10px; border-radius: 20px; }
+  .badge-available { background: #1e3828; color: #5ab878; }
+  .badge-playing { background: #2d5a1e; color: #7ec85a; }
+  .display-court-players { padding: 14px 20px; }
+  .display-player { display: flex; align-items: center; gap: 10px; padding: 6px 0; color: #c8e8d4; font-size: 16px; }
+  .display-player:not(:last-child) { border-bottom: 1px solid #1e3028; }
+  .display-court-empty { color: #3a5a48; font-size: 14px; text-align: center; padding: 16px 0; }
+  .display-queue-section { margin-top: 24px; }
+  .display-queue-title { font-size: 11px; text-transform: uppercase; letter-spacing: 0.12em; color: #4a7a5a; margin-bottom: 12px; }
+  .display-queue-items { display: flex; flex-wrap: wrap; gap: 8px; }
+  .display-queue-pill { display: flex; align-items: center; gap: 8px; padding: 8px 14px; background: #162b1e; border: 1px solid #1e3828; border-radius: 30px; color: #a8d8bc; font-size: 13px; }
+
+  select { padding: 8px 12px; border: 1px solid var(--border); border-radius: 8px; font-family: var(--mono); font-size: 13px; background: var(--bg); color: var(--text); outline: none; cursor: pointer; width: 100%; }
+  .empty-state { text-align: center; padding: 40px 20px; color: var(--muted); font-size: 13px; }
+  .toast { position: fixed; bottom: 24px; right: 24px; background: var(--text); color: #fff; padding: 12px 20px; border-radius: 10px; font-size: 13px; z-index: 999; opacity: 0; transform: translateY(10px); transition: all 0.3s; pointer-events: none; max-width: 320px; }
+  .toast.show { opacity: 1; transform: translateY(0); }
+  .queue-list::-webkit-scrollbar, .modal-body::-webkit-scrollbar { width: 4px; }
+  .queue-list::-webkit-scrollbar-thumb, .modal-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  /* AUTOCOMPLETE */
+  .checkin-name-wrap { position: relative; margin-bottom: 12px; }
+  .autocomplete-dropdown { position: absolute; top: 100%; left: 0; right: 0; background: var(--surface); border: 1px solid var(--border); border-top: none; border-radius: 0 0 8px 8px; z-index: 50; max-height: 220px; overflow-y: auto; box-shadow: 0 6px 20px rgba(0,0,0,0.1); display: none; }
+  .autocomplete-dropdown.open { display: block; }
+  .ac-item { display: flex; align-items: center; gap: 8px; padding: 10px 14px; cursor: pointer; transition: background 0.1s; border-bottom: 1px solid var(--border); }
+  .ac-item:last-child { border-bottom: none; }
+  .ac-item:hover, .ac-item.highlighted { background: var(--accent-light); }
+  .ac-item-name { flex: 1; font-size: 13px; font-weight: 500; }
+  .ac-item-meta { font-size: 11px; color: var(--muted); }
+  .known-player-banner { display: none; padding: 8px 12px; background: var(--accent-light); border: 1px solid #b8d8c8; border-radius: 8px; margin-bottom: 10px; font-size: 12px; color: var(--accent); }
+  .known-player-banner.visible { display: flex; align-items: center; gap: 8px; }
+  .known-player-banner .clear-known { margin-left: auto; background: none; border: none; cursor: pointer; color: var(--accent); font-size: 16px; line-height: 1; }
+  .level-locked { opacity: 0.5; pointer-events: none; }
+
+  /* DATABASE TAB */
+  .db-view { padding: 24px; max-width: 1400px; margin: 0 auto; }
+  .db-settings-row { display: flex; gap: 16px; margin-bottom: 24px; flex-wrap: wrap; }
+  .db-settings-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px 22px; flex: 1; min-width: 200px; }
+  .db-settings-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin-bottom: 8px; }
+  .db-save-btn { padding: 7px 16px; border-radius: 7px; border: none; cursor: pointer; font-family: var(--mono); font-size: 12px; font-weight: 500; background: var(--accent); color: #fff; transition: background 0.15s; }
+  .db-save-btn:hover { background: #235a40; }
+  .db-danger-btn { padding: 7px 14px; border-radius: 7px; border: 1px solid var(--red-light); cursor: pointer; font-family: var(--mono); font-size: 12px; background: var(--red-light); color: var(--red); }
+  .db-toolbar { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; flex-wrap: wrap; }
+  .db-search { flex: 1; min-width: 200px; padding: 9px 14px; border: 1px solid var(--border); border-radius: 8px; font-family: var(--mono); font-size: 13px; background: var(--bg); color: var(--text); outline: none; }
+  .db-search:focus { border-color: var(--accent); }
+  .db-count { font-size: 12px; color: var(--muted); white-space: nowrap; }
+  .db-table-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+  .db-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .db-table th { padding: 10px 12px; text-align: left; font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); background: var(--bg); border-bottom: 1px solid var(--border); white-space: nowrap; cursor: pointer; user-select: none; }
+  .db-table th:hover { color: var(--text); }
+  .db-table th.sorted-asc::after  { content: ' ↑'; }
+  .db-table th.sorted-desc::after { content: ' ↓'; }
+  .db-table td { padding: 8px 12px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+  .db-table tr:last-child td { border-bottom: none; }
+  .db-table tr:hover td { background: #faf9f7; }
+  .db-cell-input { width: 100%; border: none; background: transparent; font-family: var(--mono); font-size: 12px; color: var(--text); padding: 2px 4px; border-radius: 4px; outline: none; min-width: 60px; }
+  .db-cell-input:focus { background: var(--accent-light); outline: 1px solid var(--accent); }
+  .db-cell-select { border: none; background: transparent; font-family: var(--mono); font-size: 12px; color: var(--text); padding: 2px 4px; border-radius: 4px; cursor: pointer; outline: none; }
+  .db-cell-select:focus { background: var(--accent-light); outline: 1px solid var(--accent); }
+  .db-id-badge { display: inline-block; padding: 2px 7px; border-radius: 4px; background: var(--bg); border: 1px solid var(--border); font-size: 11px; font-weight: 600; color: var(--muted); min-width: 36px; text-align: center; }
+  .db-row-del { background: none; border: none; cursor: pointer; color: #ccc; font-size: 16px; padding: 0 4px; transition: color 0.15s; }
+  .db-row-del:hover { color: var(--red); }
+  .db-empty { text-align: center; padding: 48px 20px; color: var(--muted); font-size: 13px; }
+  .elo-cell { font-weight: 600; color: var(--text); }
+  .elo-peak { font-size: 9px; color: var(--muted); display: block; }
+  .promo-flag { font-size: 9px; font-weight: 700; color: var(--green); background: var(--green-light); padding: 1px 5px; border-radius: 3px; display: inline-block; }
+  .demotion-flag { font-size: 9px; color: var(--yellow); background: var(--yellow-light); padding: 1px 5px; border-radius: 3px; display: inline-block; }
+
+  /* DB → Queue checkin panel */
+  .db-queue-panel { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; margin-bottom: 16px; }
+  .db-queue-search { width: 100%; padding: 10px 14px; border: none; border-bottom: 1px solid var(--border); font-family: var(--mono); font-size: 13px; background: var(--bg); color: var(--text); outline: none; }
+  .db-queue-search:focus { background: var(--accent-light); }
+  .db-queue-list { max-height: 280px; overflow-y: auto; }
+  .db-queue-item { display: flex; align-items: center; gap: 8px; padding: 8px 14px; cursor: pointer; border-bottom: 1px solid var(--border); transition: background 0.1s; }
+  .db-queue-item:last-child { border-bottom: none; }
+  .db-queue-item:hover { background: var(--accent-light); }
+  .db-queue-item input[type=checkbox] { width: 15px; height: 15px; accent-color: var(--accent); flex-shrink: 0; cursor: pointer; }
+  .db-queue-item.already-in { opacity: 0.4; pointer-events: none; }
+  .db-queue-footer { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; border-top: 1px solid var(--border); background: var(--bg); flex-wrap: wrap; gap: 8px; }
+  .db-queue-selected { font-size: 11px; color: var(--muted); }
+  .db-queue-selected strong { color: var(--accent); }
+
+  .court-name-input { font-family: var(--serif); font-size: 15px; font-weight: 600; border: none; background: transparent; color: var(--text); width: 100%; cursor: pointer; outline: none; padding: 0; }
+  .court-name-input:focus { background: var(--accent-light); border-radius: 4px; padding: 1px 5px; cursor: text; }
+  .court-name-input:hover:not(:focus) { text-decoration: underline dotted var(--muted); }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-title">UQ Social <span>Tennis</span></div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="switchView('operator',event)">Operator</button>
+    <button class="nav-tab" onclick="switchView('database',event)">Database</button>
+    <button class="nav-tab" onclick="switchView('display',event)">TV Display</button>
+  </div>
+  <div class="session-time">Session: <span id="navSessionLabel">2:00 PM – 6:00 PM</span></div>
+</nav>
+
+<!-- OPERATOR VIEW -->
+<div class="view active" id="view-operator">
+  <div class="stat-row">
+    <div class="stat-box"><div class="stat-num" id="stat-queue">0</div><div class="stat-label">In Queue</div></div>
+    <div class="stat-box"><div class="stat-num" id="stat-playing">0</div><div class="stat-label">Playing</div></div>
+    <div class="stat-box"><div class="stat-num" id="stat-courts">0</div><div class="stat-label">Active Courts</div></div>
+    <div class="stat-box"><div class="stat-num" id="stat-avgwait">—</div><div class="stat-label">Avg Wait</div></div>
+  </div>
+
+  <div class="controls-bar">
+    <label>Courts</label>
+    <div class="court-count-ctrl">
+      <button onclick="changeCourts(-1)">−</button>
+      <span id="courtCountDisplay">6</span>
+      <button onclick="changeCourts(1)">+</button>
+    </div>
+    <div class="bar-divider"></div>
+    <span class="autofill-hint" id="autofillHint">Check-in order priority. ★5 plays up, ★1 plays down if courts need filling. New players: manual only.</span>
+    <button class="btn-autofill" onclick="previewAutofill()">⚡ Auto-Fill Courts</button>
+    <div class="bar-divider"></div>
+    <button class="btn-autofill" style="background:#1a3a2a;border:1px solid #2a5a3a;font-size:11px;padding:6px 12px" onclick="popOutTV()" title="Open TV display in a separate window">📺 Pop Out TV</button>
+    <div class="bar-divider"></div>
+    <button class="btn-autofill" style="background:var(--red);font-size:11px;padding:6px 12px" onclick="if(confirm('Clear all players from queue and courts? This cannot be undone.')) clearSession()" title="Clear all session data">🗑 Clear Session</button>
+  </div>
+
+  <div class="autofill-preview" id="autofillPreview">
+    <div class="autofill-preview-header">📋 Suggested Court Assignments — Review then confirm</div>
+    <div id="previewGroups"></div>
+    <div class="preview-actions">
+      <span class="preview-remaining" id="previewRemaining"></span>
+      <button class="btn-cancel-auto" onclick="cancelAutofill()">Cancel</button>
+      <button class="btn-rerandomise" onclick="rerandomiseAutofill()">↻ Re-randomise</button>
+      <button class="btn-confirm-auto" onclick="confirmAutofill()">✓ Confirm</button>
+    </div>
+  </div>
+
+  <div class="operator-grid">
+    <!-- LEFT COLUMN -->
+    <div>
+      <!-- CHECK IN -->
+      <div class="panel form-mb">
+        <div class="panel-header"><span class="panel-title">Check In Player</span></div>
+        <div class="panel-body">
+          <div class="known-player-banner" id="knownPlayerBanner">
+            <span class="level-dot" id="knownPlayerDot"></span>
+            <span id="knownPlayerInfo"></span>
+            <button class="clear-known" onclick="clearKnownPlayer()" title="Clear and enter manually">×</button>
+          </div>
+          <div class="checkin-name-wrap">
+            <input type="text" id="playerName" placeholder="Type name to search or add new…"
+              oninput="onNameInput()" onkeydown="onNameKeydown(event)" autocomplete="off">
+            <div class="autocomplete-dropdown" id="acDropdown"></div>
+          </div>
+          <div id="levelSelectWrap">
+            <div class="level-select" id="checkinLevelSelect">
+              <button class="level-btn blue"   onclick="selectCheckinLevel('blue',this)">● Blue</button>
+              <button class="level-btn green"  onclick="selectCheckinLevel('green',this)">● Green</button>
+              <button class="level-btn yellow" onclick="selectCheckinLevel('yellow',this)">● Yellow</button>
+              <button class="level-btn red"    onclick="selectCheckinLevel('red',this)">● Red</button>
+              <button class="level-btn white selected" onclick="selectCheckinLevel('white',this)">● New</button>
+            </div>
+          </div>
+          <button class="btn btn-primary" onclick="checkIn()">Check In</button>
+        </div>
+      </div>
+
+      <!-- QUICK ADD FROM DATABASE -->
+      <div class="db-queue-panel">
+        <div class="panel-header" style="cursor:pointer" onclick="toggleDbQueuePanel()">
+          <span class="panel-title">Add from Database</span>
+          <span id="dbQueueToggleIcon" style="font-size:11px;color:var(--muted)">▼ expand</span>
+        </div>
+        <div id="dbQueuePanelBody" style="display:none">
+          <input class="db-queue-search" id="dbQueueSearch" placeholder="Search registered players…" oninput="renderDbQueueList()">
+          <div class="db-queue-list" id="dbQueueList"></div>
+          <div class="db-queue-footer">
+            <span class="db-queue-selected"><strong id="dbQueueSelCount">0</strong> selected</span>
+            <button class="btn-sm btn-primary" onclick="addSelectedFromDB()" style="background:var(--accent)">✓ Check In Selected</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- QUEUE -->
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">Waiting Queue (<span id="queueCount">0</span>)</span>
+          <button class="btn-sm btn-accent" onclick="openAssignModal(null)">Manual Assign</button>
+        </div>
+        <div class="panel-body">
+          <div class="inner-tabs">
+            <button class="inner-tab active" onclick="filterQueue('all',this)">All</button>
+            <button class="inner-tab" onclick="filterQueue('blue',this)">● Blue</button>
+            <button class="inner-tab" onclick="filterQueue('green',this)">● Green</button>
+            <button class="inner-tab" onclick="filterQueue('yellow',this)">● Yellow</button>
+            <button class="inner-tab" onclick="filterQueue('red',this)">● Red</button>
+            <button class="inner-tab" onclick="filterQueue('white',this)">● New</button>
+          </div>
+          <div class="queue-list" id="queueList">
+            <div class="empty-state">No players checked in yet.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RESTING PLAYERS (separate panel) -->
+      <div class="rest-panel" id="restingPanel">
+        <div class="rest-panel-header" onclick="toggleRestPanel()" id="restPanelHeader">
+          <span class="panel-title" style="font-size:11px">
+            💤 Resting Players
+            <span class="rest-panel-count" id="restCount" style="display:none">0</span>
+          </span>
+          <span id="restPanelToggleIcon" style="font-size:11px;color:var(--muted)">▼</span>
+        </div>
+        <div class="rest-panel-body" id="restPanelBody" style="display:none">
+          <div class="empty-state" id="restEmptyMsg" style="padding:16px 0;font-size:12px">No players resting.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT COLUMN: COURTS -->
+    <div>
+      <div class="panel-title" style="margin-bottom:10px;padding:0 4px">Courts</div>
+      <div class="courts-grid" id="courtsGrid"></div>
+    </div>
+  </div>
+</div>
+
+<!-- DATABASE VIEW -->
+<div class="view" id="view-database">
+  <div class="db-view">
+    <div class="db-settings-row">
+      <div class="db-settings-card" style="flex:2">
+        <div class="db-settings-label">Session Schedule</div>
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+          <select id="settingSessionDay" style="padding:6px 10px;border:1px solid var(--border);border-radius:6px;font-family:var(--mono);font-size:13px;background:var(--bg)">
+            <option>Monday</option><option>Tuesday</option><option>Wednesday</option>
+            <option>Thursday</option><option>Friday</option><option>Saturday</option><option selected>Sunday</option>
+          </select>
+          <input type="time" id="settingSessionStart" value="14:00" style="padding:6px 10px;border:1px solid var(--border);border-radius:6px;font-family:var(--mono);font-size:13px;background:var(--bg)">
+          <span style="color:var(--muted);font-size:12px">to</span>
+          <input type="time" id="settingSessionEnd" value="18:00" style="padding:6px 10px;border:1px solid var(--border);border-radius:6px;font-family:var(--mono);font-size:13px;background:var(--bg)">
+          <button class="db-save-btn" onclick="saveSettings()">Save</button>
+        </div>
+      </div>
+      <div class="db-settings-card" style="flex:2;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
+        <div>
+          <div class="db-settings-label">Player Database</div>
+          <div style="font-size:12px;color:var(--muted)" id="dbStorageInfo">Saved in browser storage · persists between sessions</div>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="db-save-btn" onclick="exportDB()">↓ Export JSON</button>
+          <button class="db-save-btn" style="background:#4a7a9b" onclick="document.getElementById('importFileInput').click()">↑ Import JSON</button>
+          <input type="file" id="importFileInput" accept=".json" style="display:none" onchange="importDB(event)">
+          <button class="db-danger-btn" onclick="clearTodayStats()">Reset Today's Stats</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="db-toolbar">
+      <input class="db-search" id="dbSearch" placeholder="Search players by name, level…" oninput="renderDBTable()">
+      <span class="db-count" id="dbCount"></span>
+      <select class="db-cell-select" id="dbFilterLevel" onchange="renderDBTable()" style="padding:8px 12px;border:1px solid var(--border);border-radius:8px;background:var(--bg)">
+        <option value="">All levels</option>
+        <option value="blue">Beginner (Blue)</option>
+        <option value="green">Intermediate (Green)</option>
+        <option value="yellow">Advanced (Yellow)</option>
+        <option value="red">Expert (Red)</option>
+        <option value="white">New</option>
+      </select>
+      <button class="db-save-btn" onclick="addBlankDBPlayer()" style="white-space:nowrap">+ Add Player</button>
+    </div>
+
+    <div class="db-table-wrap">
+      <div style="overflow-x:auto">
+        <table class="db-table" id="dbTable">
+          <thead>
+            <tr>
+              <th onclick="sortDB('dbId')"         title="Unique player ID">ID</th>
+              <th onclick="sortDB('name')"          title="Full name">Name</th>
+              <th onclick="sortDB('level')"         title="Skill level">Level</th>
+              <th onclick="sortDB('elo')"           title="Current ELO rating">ELO</th>
+              <th onclick="sortDB('totalSessions')" title="Total sessions attended">Sessions</th>
+              <th onclick="sortDB('totalMatches')"  title="Total matches played">Matches</th>
+              <th onclick="sortDB('totalGamesWon')" title="Wins – Losses">W–L</th>
+              <th title="Win rate">Win%</th>
+              <th onclick="sortDB('totalCourtMins')" title="Lifetime court time">Court Time</th>
+              <th title="Average wait time per session">Avg Wait</th>
+              <th title="Today's play and wait time">Today</th>
+              <th onclick="sortDB('lastSeen')"      title="Last session date">Last Seen</th>
+              <th title="Actions"></th>
+            </tr>
+          </thead>
+          <tbody id="dbTableBody">
+            <tr><td colspan="13" class="db-empty">No players in database yet.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DISPLAY VIEW -->
+<div class="view display-view" id="view-display">
+  <div class="display-nav">
+    <div>
+      <div class="display-title">UQ Social Tennis</div>
+      <div class="display-session" id="displaySessionLabel">Session Active · 2:00 PM – 6:00 PM</div>
+    </div>
+    <div class="display-clock" id="displayClock">--:--</div>
+  </div>
+  <div class="display-body">
+    <div class="display-courts-grid" id="displayCourts"></div>
+    <div class="display-queue-section">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px">
+        <div class="display-queue-title" style="margin-bottom:0">Waiting Queue</div>
+        <div id="displayAvgWait" style="font-size:12px;color:#5a8a6a;background:#0d2218;border:1px solid #1e3828;padding:5px 14px;border-radius:20px;letter-spacing:0.05em"></div>
+      </div>
+      <div class="display-queue-items" id="displayQueue"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── EDIT PLAYER MODAL ── -->
+<div class="modal-overlay" id="editPlayerModal">
+  <div class="modal" style="width:380px">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title" id="editPlayerTitle">Edit Player</div>
+        <div class="modal-subtitle">Adjust level or skill rating on the fly</div>
+      </div>
+      <button class="modal-close" onclick="closeModal('editPlayerModal')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="edit-section">
+        <span class="modal-label">Level</span>
+        <div class="level-select" id="editLevelSelect">
+          <button class="level-btn blue"   onclick="setEditLevel('blue',this)">● Blue</button>
+          <button class="level-btn green"  onclick="setEditLevel('green',this)">● Green</button>
+          <button class="level-btn yellow" onclick="setEditLevel('yellow',this)">● Yellow</button>
+          <button class="level-btn red"    onclick="setEditLevel('red',this)">● Red</button>
+          <button class="level-btn white"  onclick="setEditLevel('white',this)">● New</button>
+        </div>
+      </div>
+      <div class="edit-section">
+        <span class="modal-label">Skill Rating (1–5 within level)</span>
+        <div class="edit-star-group" id="editStarGroup">
+          <button class="edit-star" data-v="1" onclick="setEditRating(1)">★</button>
+          <button class="edit-star" data-v="2" onclick="setEditRating(2)">★</button>
+          <button class="edit-star" data-v="3" onclick="setEditRating(3)">★</button>
+          <button class="edit-star" data-v="4" onclick="setEditRating(4)">★</button>
+          <button class="edit-star" data-v="5" onclick="setEditRating(5)">★</button>
+        </div>
+        <div class="edit-star-hint" id="editStarHint">Click a star to rate — click again to clear</div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-sm" style="background:var(--bg);border:1px solid var(--border);color:var(--text)" onclick="closeModal('editPlayerModal')">Cancel</button>
+      <button class="btn-sm btn-primary btn" onclick="confirmEditPlayer()">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── SCORE CAPTURE MODAL ── -->
+<div class="modal-overlay" id="scoreCaptureModal">
+  <div class="modal score-modal">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title" id="scoreModalTitle">Game Done</div>
+        <div class="modal-subtitle" id="scoreModalSubtitle">Step 1 of 2 — Who played on the same team?</div>
+      </div>
+      <button class="modal-close" onclick="skipScoreCapture()">×</button>
+    </div>
+    <div class="modal-body">
+      <!-- Step 1: Team pairing selection -->
+      <div id="scoreStep1">
+        <div id="teamOptions"></div>
+        <p style="font-size:11px;color:var(--muted);margin-top:8px;text-align:center">Select the pairing that played together — or skip if unsure</p>
+      </div>
+      <!-- Step 2: Score entry -->
+      <div id="scoreStep2" style="display:none">
+        <div class="score-entry">
+          <div class="score-team-box">
+            <div class="score-team-label">Team A</div>
+            <div class="score-team-names" id="scoreTeamANames"></div>
+            <input type="number" class="score-num-input" id="scoreInputA" min="0" max="8" placeholder="0" oninput="onScoreInput()">
+          </div>
+          <div class="score-separator">–</div>
+          <div class="score-team-box">
+            <div class="score-team-label">Team B</div>
+            <div class="score-team-names" id="scoreTeamBNames"></div>
+            <input type="number" class="score-num-input" id="scoreInputB" min="0" max="8" placeholder="0" oninput="onScoreInput()">
+          </div>
+        </div>
+        <div class="score-msg" id="scoreMsg"></div>
+        <div class="elo-change-preview" id="eloPreview" style="display:none"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-skip-score" id="scoreSkipBtn" onclick="skipScoreCapture()">Skip — No Score</button>
+      <button class="btn-back-step" id="scoreBackBtn" onclick="goBackStep1()" style="display:none">← Back</button>
+      <button class="btn-sm btn-primary btn" id="scoreConfirmBtn" onclick="confirmGameDone()" style="display:none">Record Score ✓</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── MANUAL ASSIGN MODAL ── -->
+<div class="modal-overlay" id="assignModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div><div class="modal-title">Assign to Court</div><div class="modal-subtitle">Pick a court and 2–4 players from the queue</div></div>
+      <button class="modal-close" onclick="closeModal('assignModal')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-mb">
+        <span class="modal-label">Court</span>
+        <select id="courtSelect"></select>
+      </div>
+      <span class="modal-label">Players (2–4)</span>
+      <div class="select-player-list" id="playerSelectList"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-sm" style="background:var(--bg);border:1px solid var(--border);color:var(--text)" onclick="closeModal('assignModal')">Cancel</button>
+      <button class="btn-sm btn-primary btn" onclick="confirmAssign()">Assign to Court</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── ADD TO ACTIVE COURT MODAL ── -->
+<div class="modal-overlay" id="addToCourtModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div><div class="modal-title" id="addModalTitle">Add Players to Court</div><div class="modal-subtitle">⏱ Timer keeps running — existing players unaffected</div></div>
+      <button class="modal-close" onclick="closeModal('addToCourtModal')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="current-on-court">
+        <div class="current-on-court-label">Currently playing</div>
+        <div class="current-chips" id="currentChips"></div>
+      </div>
+      <div class="slots-info" id="slotsInfo"></div>
+      <div class="add-note">Select players from the queue to join. Game timer and existing players are not affected.</div>
+      <div class="select-player-list" id="addPlayerList"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-sm" style="background:var(--bg);border:1px solid var(--border);color:var(--text)" onclick="closeModal('addToCourtModal')">Cancel</button>
+      <button class="btn-sm btn-primary btn" onclick="confirmAddToCourt()">Add Players</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ─── ELO CONSTANTS ───────────────────────────────────────
+const ELO_K         = n => n < 5 ? 40 : n < 15 ? 32 : 24;
+const ELO_MARGIN    = d => d <= 1 ? 1.0 : d <= 3 ? 1.05 : d <= 5 ? 1.1 : 1.2;
+const ELO_START_BY_LEVEL = { white:800, blue:950, green:1350, yellow:1750, red:2100 };
+const ELO_BOUNDARIES     = { blue:800, green:1200, yellow:1600, red:2000 };
+const ELO_SOFT_FLOOR_GAP = 200;   // points below boundary before demotion tracking starts
+const ELO_DEMOTION_FLOOR = 10;    // consecutive below-floor matches before visual demotion
+const ELO_PROMO_FLOOR    = 8;     // consecutive above-boundary matches before promo flag
+const ELO_NEW_MATCHES    = 5;     // matches before white/new player gets auto-assigned colour
+
+// ─── DATABASE (localStorage) ──────────────────────────────
+let DB = { settings:{}, players:[], matches:[], nextDbId:1 };
+let DB_SORT = { col:'name', dir:'asc' };
+
+function loadDB() {
+  try { const r = localStorage.getItem('socialTennisDB'); if (r) DB = JSON.parse(r); } catch(e) {}
+  if (!DB.settings) DB.settings = {};
+  DB.settings.sessionDay   = DB.settings.sessionDay   ?? 'Sunday';
+  DB.settings.sessionStart = DB.settings.sessionStart ?? '14:00';
+  DB.settings.sessionEnd   = DB.settings.sessionEnd   ?? '18:00';
+  if (!DB.players)  DB.players  = [];
+  if (!DB.matches)  DB.matches  = [];
+  if (!DB.nextDbId) DB.nextDbId = DB.players.length ? Math.max(...DB.players.map(p=>p.dbId||0))+1 : 1;
+}
+
+function fmt12(t) {
+  if (!t) return '';
+  const [h,m] = t.split(':').map(Number);
+  return `${h%12||12}:${String(m).padStart(2,'0')} ${h>=12?'PM':'AM'}`;
+}
+
+function syncSessionLabel() {
+  const {sessionDay,sessionStart,sessionEnd} = DB.settings;
+  const tr = `${fmt12(sessionStart)} – ${fmt12(sessionEnd)}`;
+  const nav  = document.getElementById('navSessionLabel');
+  const disp = document.getElementById('displaySessionLabel');
+  if (nav)  nav.textContent  = tr;
+  if (disp) disp.textContent = `${sessionDay} · ${tr}`;
+}
+
+function saveDB() {
+  try { localStorage.setItem('socialTennisDB', JSON.stringify(DB)); } catch(e) {}
+}
+
+function todayStr() { return new Date().toISOString().slice(0,10); }
+
+function dbGetOrCreate(name, level, rating) {
+  let rec = DB.players.find(p => p.name.toLowerCase() === name.toLowerCase());
+  if (!rec) {
+    const base = name; let sfx = 2;
+    while (DB.players.find(p => p.name.toLowerCase() === name.toLowerCase())) name = `${base} #${sfx++}`;
+    rec = {
+      dbId: DB.nextDbId++, name,
+      level: level || 'white', rating: rating || 0,
+      elo: 0, peakElo: 0, peakEloDate: null,
+      aboveFloorCount: 0, belowFloorCount: 0, promotionEligible: false,
+      registeredAt: todayStr(), firstSeen: todayStr(), lastSeen: null,
+      totalSessions: 0, totalMatches: 0,
+      totalGamesWon: 0, totalGamesLost: 0,
+      totalCourtMins: 0, totalWaitMins: 0,
+      todayPlayMins: 0, todayWaitMins: 0, todayDate: todayStr(),
+    };
+    DB.players.push(rec);
+  }
+  return rec;
+}
+
+function ensureElo(rec) {
+  if (!rec.elo) {
+    rec.elo = ELO_START_BY_LEVEL[rec.level] || 950;
+    rec.peakElo = rec.elo; rec.peakEloDate = todayStr();
+    rec.aboveFloorCount = rec.aboveFloorCount || 0;
+    rec.belowFloorCount = rec.belowFloorCount || 0;
+    rec.promotionEligible = rec.promotionEligible || false;
+  }
+}
+
+function dbResetTodayIfNeeded(rec) {
+  if (rec.todayDate !== todayStr()) { rec.todayPlayMins = 0; rec.todayWaitMins = 0; rec.todayDate = todayStr(); }
+}
+
+function dbRecordCheckin(rec) {
+  dbResetTodayIfNeeded(rec);
+  rec.lastSeen = todayStr();
+  if (!rec.firstSeen) rec.firstSeen = todayStr();
+  rec.totalSessions = (rec.totalSessions||0) + 1;
+  ensureElo(rec);
+  saveDB();
+}
+
+function dbAddPlayTime(dbId, mins) {
+  const r = DB.players.find(p=>p.dbId===dbId); if (!r) return;
+  dbResetTodayIfNeeded(r);
+  r.todayPlayMins  = +((r.todayPlayMins||0)  + mins).toFixed(1);
+  r.totalCourtMins = +((r.totalCourtMins||0) + mins).toFixed(1);
+  saveDB();
+}
+
+function dbAddWaitTime(dbId, mins) {
+  const r = DB.players.find(p=>p.dbId===dbId); if (!r) return;
+  dbResetTodayIfNeeded(r);
+  r.todayWaitMins = +((r.todayWaitMins||0) + mins).toFixed(1);
+  r.totalWaitMins = +((r.totalWaitMins||0) + mins).toFixed(1);
+  saveDB();
+}
+
+// ─── ELO ENGINE ──────────────────────────────────────────
+function eloToLevel(elo) {
+  if (elo >= 2000) return 'red';
+  if (elo >= 1600) return 'yellow';
+  if (elo >= 1200) return 'green';
+  if (elo >= 800)  return 'blue';
+  return 'white';
+}
+
+function previewEloChanges(teamAIds, teamBIds, scoreA, scoreB) {
+  // Returns { dbId: deltaNumber } for display — doesn't save anything
+  const resolve = ids => ids.map(id => {
+    const sp = S.players.find(p=>p.id===id); if (!sp||!sp.dbId) return null;
+    const r = DB.players.find(p=>p.dbId===sp.dbId); if (r) ensureElo(r); return r;
+  }).filter(Boolean);
+  const pA = resolve(teamAIds), pB = resolve(teamBIds);
+  if (!pA.length || !pB.length) return {};
+  const avgA = pA.reduce((s,p)=>s+p.elo,0)/pA.length;
+  const avgB = pB.reduce((s,p)=>s+p.elo,0)/pB.length;
+  const expA = 1/(1+Math.pow(10,(avgB-avgA)/400));
+  const actA = scoreA>scoreB?1:scoreA===scoreB?0.5:0;
+  const mult = ELO_MARGIN(Math.abs(scoreA-scoreB));
+  const out = {};
+  pA.forEach(p=>{out[p.dbId]=Math.round(ELO_K(p.totalMatches||0)*(actA-expA)*mult);});
+  pB.forEach(p=>{out[p.dbId]=Math.round(ELO_K(p.totalMatches||0)*((1-actA)-(1-expA))*mult);});
+  return out;
+}
+
+function applyEloAndFinishCourt(courtId, teamAIds, teamBIds, scoreA, scoreB) {
+  const court = S.courts.find(c=>c.id===courtId); if (!court) return;
+  const now   = new Date();
+  const playMins = court.startTime ? (now - new Date(court.startTime))/60000 : 0;
+
+  // Return players to queue first
+  court.playerIds.forEach(pid => {
+    const p = S.players.find(p=>p.id===pid);
+    if (p) {
+      p.status='queue'; p.courtId=null; p.waitingSince=now; p.hasPlayed=true;
+      if (p.dbId) dbAddPlayTime(p.dbId, playMins);
+    }
+  });
+  court.status='available'; court.playerIds=[]; court.startTime=null;
+
+  // Record match + update ELO if score provided
+  if (teamAIds.length && teamBIds.length && scoreA!==null && scoreB!==null) {
+    const resolve = ids => ids.map(id => {
+      const sp = S.players.find(p=>p.id===id); if (!sp||!sp.dbId) return null;
+      const r = DB.players.find(p=>p.dbId===sp.dbId); if (r) ensureElo(r); return r;
+    }).filter(Boolean);
+    const pA = resolve(teamAIds), pB = resolve(teamBIds);
+    if (pA.length && pB.length) {
+      const avgA = pA.reduce((s,p)=>s+p.elo,0)/pA.length;
+      const avgB = pB.reduce((s,p)=>s+p.elo,0)/pB.length;
+      const expA = 1/(1+Math.pow(10,(avgB-avgA)/400));
+      const actA = scoreA>scoreB?1:scoreA===scoreB?0.5:0;
+      const actB = 1-actA;
+      const mult = ELO_MARGIN(Math.abs(scoreA-scoreB));
+      const today = todayStr();
+      // Record match in DB
+      DB.matches.push({ matchId:'M'+Date.now(), courtId, date:today,
+        teamA:teamAIds.map(id=>{const sp=S.players.find(p=>p.id===id);return sp?.dbId||null;}),
+        teamB:teamBIds.map(id=>{const sp=S.players.find(p=>p.id===id);return sp?.dbId||null;}),
+        scoreA, scoreB });
+      // Update each player
+      [...pA,...pB].forEach(p => {
+        const isA = pA.includes(p);
+        const pScore = isA?scoreA:scoreB, oScore = isA?scoreB:scoreA;
+        const act = isA?actA:actB, exp = isA?expA:(1-expA);
+        const delta = Math.round(ELO_K(p.totalMatches||0)*(act-exp)*mult);
+        p.elo = Math.max(100, p.elo+delta);
+        p.totalMatches  = (p.totalMatches||0)+1;
+        p.totalGamesWon  = (p.totalGamesWon||0)+pScore;
+        p.totalGamesLost = (p.totalGamesLost||0)+oScore;
+        if (p.elo>(p.peakElo||0)) { p.peakElo=p.elo; p.peakEloDate=today; }
+        updateDisplayLevel(p);
+        // Sync to session player
+        const sp = S.players.find(q=>q.dbId===p.dbId);
+        if (sp) { sp.level=p.level; sp.elo=p.elo; sp.promotionEligible=p.promotionEligible; }
+      });
+      saveDB();
+    }
+  }
+  showToast(`${court.name} done — players back in queue`);
+  renderAll();
+}
+
+function updateDisplayLevel(p) {
+  const calc = eloToLevel(p.elo);
+  const calcIdx = levelIdx(calc), currIdx = levelIdx(p.level);
+  if (p.level === 'white') {
+    // Auto-graduate new player after enough matches
+    if ((p.totalMatches||0) >= ELO_NEW_MATCHES) {
+      p.level = calc; p.promotionEligible=false; p.aboveFloorCount=0; p.belowFloorCount=0;
+    }
+    return;
+  }
+  if (calcIdx > currIdx) {
+    // Above current level — track consecutive matches
+    p.aboveFloorCount = (p.aboveFloorCount||0)+1; p.belowFloorCount=0;
+    p.promotionEligible = p.aboveFloorCount >= ELO_PROMO_FLOOR-2;
+    if (p.aboveFloorCount >= ELO_PROMO_FLOOR) { p.level=calc; p.aboveFloorCount=0; p.promotionEligible=false; }
+  } else if (calcIdx < currIdx) {
+    // Below current level — check soft floor before demoting
+    const boundary = ELO_BOUNDARIES[p.level] || 800;
+    const softFloor = boundary - ELO_SOFT_FLOOR_GAP;
+    if (p.elo < softFloor) {
+      p.belowFloorCount = (p.belowFloorCount||0)+1; p.aboveFloorCount=0;
+      if (p.belowFloorCount >= ELO_DEMOTION_FLOOR) { p.level=calc; p.belowFloorCount=0; }
+    } else {
+      p.belowFloorCount=0; // within soft floor buffer — no demotion
+    }
+  } else {
+    p.aboveFloorCount=0; p.belowFloorCount=0;
+    if (calcIdx === currIdx) p.promotionEligible=false;
+  }
+}
+
+// ─── SESSION PERSISTENCE ─────────────────────────────────
+const SESSION_KEY = 'socialTennisSession';
+function saveSession() {
+  try {
+    localStorage.setItem(SESSION_KEY, JSON.stringify({
+      players:S.players, courts:S.courts, numCourts:S.numCourts, savedAt:Date.now()
+    }));
+  } catch(e) {}
+}
+function loadSession() {
+  try {
+    const raw = localStorage.getItem(SESSION_KEY); if (!raw) return;
+    const data = JSON.parse(raw);
+    if (data.savedAt && (Date.now()-data.savedAt) > 18*3600*1000) { localStorage.removeItem(SESSION_KEY); return; }
+    if (data.players) {
+      data.players.forEach(p => {
+        if (p.checkinTime)  p.checkinTime  = new Date(p.checkinTime);
+        if (p.waitingSince) p.waitingSince = new Date(p.waitingSince);
+        if (p.restSince)    p.restSince    = new Date(p.restSince);
+      });
+      S.players = data.players;
+    }
+    if (data.courts) {
+      data.courts.forEach(c => { if (c.startTime) c.startTime = new Date(c.startTime); });
+      S.courts = data.courts;
+    }
+    if (data.numCourts) S.numCourts = data.numCourts;
+  } catch(e) {}
+}
+function clearSession() {
+  localStorage.removeItem(SESSION_KEY);
+  S.players=[]; S.courts=[]; S.numCourts=6;
+  buildCourts(6); cancelAutofill(); renderAll();
+  showToast('Session cleared');
+}
+
+// ─── STATE ────────────────────────────────────────────────
+const S = {
+  players:[], courts:[], numCourts:6,
+  queueFilter:'all', checkinLevel:'white', knownDbPlayer:null, acHighlight:-1,
+  assignSelected:[], addCourtId:null, addSelected:[],
+  autofillPlan:[],
+  editPlayerId:null, editLevel:'white', editRating:0,
+  restPanelOpen: false,
+  scoreCapture:{ courtId:null, players:[], pairingIdx:-1, step:1 },
+};
+
+// ─── INIT ─────────────────────────────────────────────────
+function init() {
+  loadDB(); loadSession(); buildCourts(S.numCourts); syncSessionLabel(); renderAll();
+  setInterval(() => {
+    updateClock();
+    if (!document.activeElement?.classList.contains('court-name-input')) renderCourts();
+  }, 1000);
+  updateClock();
+}
+
+// ─── COURTS SETUP ─────────────────────────────────────────
+function buildCourts(n) {
+  while (S.courts.length < n) {
+    const idx = S.courts.length;
+    const existing = S.courts.map(c=>c.name.replace(/^Court\s*/i,'').trim());
+    const usesLetters = existing.length>0 && /^[A-Z]$/i.test(existing[0]);
+    let autoName;
+    if (usesLetters) { autoName = `Court ${String.fromCharCode(65+idx)}`; }
+    else { const nums=existing.map(v=>parseInt(v)).filter(v=>!isNaN(v)); const next=nums.length?Math.max(...nums)+1:idx+1; autoName=`Court ${next}`; }
+    S.courts.push({ id:'c'+Date.now()+Math.random(), name:autoName, status:'available', playerIds:[], startTime:null });
+  }
+  while (S.courts.length>n && S.courts[S.courts.length-1].status==='available') S.courts.pop();
+}
+
+function renameCourt(courtId, newName) {
+  const c = S.courts.find(c=>c.id===courtId); if (c&&newName.trim()) c.name=newName.trim();
+}
+
+function changeCourts(d) {
+  const next = Math.max(1,Math.min(30,S.numCourts+d));
+  if (next===S.numCourts) return;
+  if (d<0 && S.courts[S.courts.length-1]?.status==='playing') { showToast('Last court has active players — cannot remove'); return; }
+  S.numCourts=next; buildCourts(next); cancelAutofill(); renderAll();
+}
+
+// ─── CHECK IN ─────────────────────────────────────────────
+function selectCheckinLevel(level,btn) {
+  S.checkinLevel=level;
+  document.querySelectorAll('#checkinLevelSelect .level-btn').forEach(b=>b.classList.remove('selected'));
+  btn.classList.add('selected');
+}
+
+function onNameInput() {
+  const q = document.getElementById('playerName').value.trim().toLowerCase();
+  S.acHighlight=-1;
+  if (q.length<1) { closeAC(); return; }
+  const matches = DB.players.filter(p=>p.name.toLowerCase().includes(q)).slice(0,8);
+  const dd = document.getElementById('acDropdown');
+  if (!matches.length) { dd.innerHTML=''; dd.classList.remove('open'); return; }
+  dd.innerHTML = matches.map((p,i) => {
+    const c = lvlColor(p.level);
+    const eloStr = p.elo ? ` · ${p.elo}` : '';
+    return `<div class="ac-item" data-i="${i}" onmousedown="selectKnownPlayer(${p.dbId})">
+      <span class="level-dot" style="background:${c}"></span>
+      <span class="ac-item-name">${esc(p.name)}</span>
+      <span class="ac-item-meta">${lvlLabel(p.level)}${p.rating?' · '+'★'.repeat(p.rating):''}${eloStr}</span>
+    </div>`;
+  }).join('');
+  dd.classList.add('open');
+}
+
+function onNameKeydown(e) {
+  const dd=document.getElementById('acDropdown'), items=dd.querySelectorAll('.ac-item');
+  if (e.key==='ArrowDown')  { e.preventDefault(); S.acHighlight=Math.min(S.acHighlight+1,items.length-1); items.forEach((el,i)=>el.classList.toggle('highlighted',i===S.acHighlight)); }
+  else if (e.key==='ArrowUp')   { e.preventDefault(); S.acHighlight=Math.max(S.acHighlight-1,-1); items.forEach((el,i)=>el.classList.toggle('highlighted',i===S.acHighlight)); }
+  else if (e.key==='Enter')     { if (S.acHighlight>=0&&items[S.acHighlight]) items[S.acHighlight].dispatchEvent(new MouseEvent('mousedown')); else checkIn(); }
+  else if (e.key==='Escape')    { closeAC(); }
+}
+
+function closeAC() { const dd=document.getElementById('acDropdown'); dd.innerHTML=''; dd.classList.remove('open'); S.acHighlight=-1; }
+
+function selectKnownPlayer(dbId) {
+  const rec = DB.players.find(p=>p.dbId===dbId); if (!rec) return;
+  S.knownDbPlayer=rec; closeAC();
+  document.getElementById('playerName').value=rec.name;
+  const c=lvlColor(rec.level);
+  document.getElementById('knownPlayerDot').style.background=c;
+  const eloStr = rec.elo ? ` · ELO ${rec.elo}` : '';
+  document.getElementById('knownPlayerInfo').textContent=`${rec.name} · ${lvlLabel(rec.level)}${rec.rating?' '+'★'.repeat(rec.rating):''}${eloStr}`;
+  document.getElementById('knownPlayerBanner').classList.add('visible');
+  document.getElementById('levelSelectWrap').classList.add('level-locked');
+  S.checkinLevel=rec.level;
+}
+
+function clearKnownPlayer() {
+  S.knownDbPlayer=null;
+  document.getElementById('knownPlayerBanner').classList.remove('visible');
+  document.getElementById('levelSelectWrap').classList.remove('level-locked');
+  document.getElementById('playerName').value='';
+  document.getElementById('playerName').focus();
+}
+
+function checkIn() {
+  const nameRaw = document.getElementById('playerName').value.trim();
+  if (!nameRaw) { showToast('Enter a player name'); return; }
+  closeAC();
+  let dbRec;
+  if (S.knownDbPlayer) {
+    dbRec=S.knownDbPlayer;
+    if (S.players.find(p=>p.dbId===dbRec.dbId&&(p.status==='queue'||p.status==='playing'))) { showToast(`${dbRec.name} is already checked in`); return; }
+  } else {
+    const existing = DB.players.find(p=>p.name.toLowerCase()===nameRaw.toLowerCase());
+    if (existing) { if (confirm(`"${nameRaw}" already exists (${lvlLabel(existing.level)}). Use this player's record?`)) { selectKnownPlayer(existing.dbId); return; } }
+    dbRec = dbGetOrCreate(nameRaw,S.checkinLevel,0);
+    if (dbRec.name!==nameRaw) showToast(`Duplicate name — saved as "${dbRec.name}"`);
+  }
+  dbRecordCheckin(dbRec);
+  const now=new Date();
+  S.players.push({
+    id:'p'+Date.now()+Math.random(), dbId:dbRec.dbId,
+    name:dbRec.name, level:dbRec.level, rating:dbRec.rating,
+    elo: dbRec.elo, promotionEligible: dbRec.promotionEligible||false,
+    status:'queue', courtId:null, checkinTime:now, waitingSince:now,
+    hasPlayed:false, lastPlayedWith:[],
+  });
+  document.getElementById('playerName').value=''; clearKnownPlayer();
+  showToast(`${dbRec.name} checked in ✓`);
+  cancelAutofill(); renderAll();
+}
+
+function removeFromQueue(id) { S.players=S.players.filter(p=>p.id!==id); cancelAutofill(); renderAll(); }
+
+function restPlayer(id) {
+  const p=S.players.find(p=>p.id===id); if (!p) return;
+  p.status='rest'; p.restSince=new Date();
+  cancelAutofill(); renderAll();
+  showToast(`${p.name} resting — use Rejoin to bring them back`);
+}
+
+function rejoinQueue(id) {
+  const p=S.players.find(p=>p.id===id); if (!p) return;
+  p.status='queue'; p.waitingSince=new Date(); p.restSince=null;
+  cancelAutofill(); renderAll();
+  showToast(`${p.name} back in queue`);
+}
+
+// ─── REST PANEL TOGGLE ────────────────────────────────────
+function toggleRestPanel() {
+  S.restPanelOpen = !S.restPanelOpen;
+  renderRestingPanel();
+}
+
+// ─── EDIT PLAYER MODAL ────────────────────────────────────
+function openEditPlayer(id) {
+  const p=S.players.find(p=>p.id===id); if (!p) return;
+  S.editPlayerId=id; S.editLevel=p.level; S.editRating=p.rating||0;
+  document.getElementById('editPlayerTitle').textContent=`Edit — ${p.name}`;
+  document.querySelectorAll('#editLevelSelect .level-btn').forEach(b=>b.classList.toggle('selected',b.getAttribute('onclick').includes(`'${p.level}'`)));
+  renderEditStars();
+  document.getElementById('editPlayerModal').classList.add('open');
+}
+function setEditLevel(level,btn) { S.editLevel=level; document.querySelectorAll('#editLevelSelect .level-btn').forEach(b=>b.classList.remove('selected')); btn.classList.add('selected'); }
+function setEditRating(v) { S.editRating=(S.editRating===v)?0:v; renderEditStars(); }
+function renderEditStars() {
+  document.querySelectorAll('#editStarGroup .edit-star').forEach(b=>b.classList.toggle('lit',parseInt(b.dataset.v)<=S.editRating));
+  const l=['Click a star to rate — click again to clear','1 — Developing','2 — Competent','3 — Solid','4 — Strong','5 — Elite within level'];
+  document.getElementById('editStarHint').textContent=l[S.editRating]||l[0];
+}
+function confirmEditPlayer() {
+  const p=S.players.find(p=>p.id===S.editPlayerId); if (!p) return;
+  const old=p.level; p.level=S.editLevel; p.rating=S.editRating;
+  // Sync to DB
+  const rec=DB.players.find(r=>r.dbId===p.dbId);
+  if (rec) { rec.level=p.level; rec.rating=p.rating; saveDB(); }
+  closeModal('editPlayerModal');
+  const ch=[]; if (old!==p.level) ch.push(`level → ${lvlLabel(p.level)}`); if (p.rating) ch.push(`rating → ${'★'.repeat(p.rating)}`);
+  showToast(`${p.name} updated${ch.length?': '+ch.join(', '):''}`);
+  cancelAutofill(); renderAll();
+}
+
+// ─── SCORE CAPTURE MODAL ─────────────────────────────────
+function openScoreModal(courtId) {
+  const court=S.courts.find(c=>c.id===courtId); if (!court) return;
+  const players=court.playerIds.map(id=>S.players.find(p=>p.id===id)).filter(Boolean);
+  S.scoreCapture={ courtId, players, pairingIdx:-1, step:1 };
+  document.getElementById('scoreModalTitle').textContent=`Game Done — ${court.name}`;
+  document.getElementById('scoreInputA').value='';
+  document.getElementById('scoreInputB').value='';
+  document.getElementById('scoreMsg').textContent='';
+  document.getElementById('eloPreview').style.display='none';
+  renderScoreModal();
+  document.getElementById('scoreCaptureModal').classList.add('open');
+}
+
+function renderScoreModal() {
+  const {players,pairingIdx,step}=S.scoreCapture;
+  const [p0,p1,p2,p3]=players;
+  const canDoElo = players.length===4;
+  // 3 possible pairings for 4 players
+  const pairings = canDoElo ? [
+    {a:[p0,p1],b:[p2,p3]},
+    {a:[p0,p2],b:[p1,p3]},
+    {a:[p0,p3],b:[p1,p2]},
+  ] : [];
+
+  if (step===1) {
+    document.getElementById('scoreStep1').style.display='block';
+    document.getElementById('scoreStep2').style.display='none';
+    document.getElementById('scoreModalSubtitle').textContent = canDoElo ? 'Step 1 of 2 — Who played on the same team?' : 'Skip team — record score only';
+    document.getElementById('scoreSkipBtn').style.display='';
+    document.getElementById('scoreBackBtn').style.display='none';
+    document.getElementById('scoreConfirmBtn').style.display='none';
+
+    if (canDoElo) {
+      document.getElementById('teamOptions').innerHTML = pairings.map((pair,i)=>`
+        <div class="team-pairing-option${pairingIdx===i?' selected':''}" onclick="selectTeamPairing(${i})">
+          <div class="pairing-team">
+            ${pair.a.map(p=>p?`<div class="pairing-player"><span class="level-dot dot-${p.level}"></span><span>${esc(p.name)}</span></div>`:'').join('')}
+          </div>
+          <div class="pairing-vs">vs</div>
+          <div class="pairing-team">
+            ${pair.b.map(p=>p?`<div class="pairing-player"><span class="level-dot dot-${p.level}"></span><span>${esc(p.name)}</span></div>`:'').join('')}
+          </div>
+        </div>`).join('');
+    } else {
+      document.getElementById('teamOptions').innerHTML='<p style="font-size:12px;color:var(--muted);padding:8px 0">Court has fewer than 4 players — team pairing not available. You can still record a score.</p>';
+    }
+  } else {
+    document.getElementById('scoreStep1').style.display='none';
+    document.getElementById('scoreStep2').style.display='block';
+    document.getElementById('scoreModalSubtitle').textContent='Step 2 of 2 — Enter the final score';
+    document.getElementById('scoreSkipBtn').style.display='none';
+    document.getElementById('scoreBackBtn').style.display='';
+    document.getElementById('scoreConfirmBtn').style.display='';
+
+    const pair = pairings[pairingIdx];
+    document.getElementById('scoreTeamANames').textContent = pair.a.map(p=>p?.name||'?').join(' & ');
+    document.getElementById('scoreTeamBNames').textContent = pair.b.map(p=>p?.name||'?').join(' & ');
+    onScoreInput(); // refresh preview if values already entered
+  }
+}
+
+function selectTeamPairing(idx) {
+  S.scoreCapture.pairingIdx=idx; S.scoreCapture.step=2;
+  renderScoreModal();
+  document.getElementById('scoreInputA').focus();
+}
+
+function goBackStep1() { S.scoreCapture.step=1; renderScoreModal(); }
+
+function onScoreInput() {
+  const a=parseInt(document.getElementById('scoreInputA').value)||0;
+  const b=parseInt(document.getElementById('scoreInputB').value)||0;
+  const msg=document.getElementById('scoreMsg');
+  const preview=document.getElementById('eloPreview');
+  if (a+b===0) { msg.textContent=''; preview.style.display='none'; return; }
+  if (a+b>8) { msg.textContent='Total games cannot exceed 8'; msg.className='score-msg err'; preview.style.display='none'; return; }
+  if (a+b<8) { msg.textContent=`${8-a-b} game${8-a-b!==1?'s':''} unaccounted — that's fine if match was cut short`; msg.className='score-msg ok'; }
+  else { msg.textContent='✓ Valid 8-game match'; msg.className='score-msg ok'; }
+
+  // Show ELO preview
+  const {players,pairingIdx}=S.scoreCapture;
+  if (players.length===4&&pairingIdx>=0) {
+    const pairings=[{a:[players[0],players[1]],b:[players[2],players[3]]},{a:[players[0],players[2]],b:[players[1],players[3]]},{a:[players[0],players[3]],b:[players[1],players[2]]}];
+    const pair=pairings[pairingIdx];
+    const teamAIds=pair.a.map(p=>p.id), teamBIds=pair.b.map(p=>p.id);
+    const changes=previewEloChanges(teamAIds,teamBIds,a,b);
+    if (Object.keys(changes).length) {
+      preview.style.display='flex';
+      preview.innerHTML='<span style="font-size:10px;color:var(--muted);width:100%;margin-bottom:4px">ELO changes if confirmed:</span>'+
+        [...pair.a,...pair.b].map(p=>{
+          if (!p) return '';
+          const rec=DB.players.find(r=>r.dbId===p.dbId); if (!rec) return '';
+          const d=changes[rec.dbId]||0;
+          const cls=d>0?'elo-up':d<0?'elo-down':'elo-zero';
+          const sign=d>0?'+':'';
+          return `<span class="elo-change-pill ${cls}"><span class="level-dot dot-${p.level}"></span>${esc(p.name)} ${sign}${d} → ${rec.elo+d}</span>`;
+        }).join('');
+    }
+  }
+}
+
+function confirmGameDone() {
+  const {courtId,players,pairingIdx}=S.scoreCapture;
+  const scoreA=parseInt(document.getElementById('scoreInputA').value);
+  const scoreB=parseInt(document.getElementById('scoreInputB').value);
+  if (isNaN(scoreA)||isNaN(scoreB)||scoreA<0||scoreB<0) { showToast('Enter valid scores for both teams'); return; }
+  if (scoreA+scoreB>8) { showToast('Total games cannot exceed 8'); return; }
+  const pairings=[{a:[players[0],players[1]],b:[players[2],players[3]]},{a:[players[0],players[2]],b:[players[1],players[3]]},{a:[players[0],players[3]],b:[players[1],players[2]]}];
+  const pair=pairings[pairingIdx];
+  const teamAIds=pair.a.map(p=>p.id), teamBIds=pair.b.map(p=>p.id);
+  closeModal('scoreCaptureModal');
+  applyEloAndFinishCourt(courtId,teamAIds,teamBIds,scoreA,scoreB);
+}
+
+function skipScoreCapture() {
+  const {courtId}=S.scoreCapture;
+  closeModal('scoreCaptureModal');
+  if (courtId) {
+    // Return players to queue with no ELO change
+    const court=S.courts.find(c=>c.id===courtId); if (!court) return;
+    const now=new Date();
+    const playMins=court.startTime?(now-new Date(court.startTime))/60000:0;
+    court.playerIds.forEach(pid=>{
+      const p=S.players.find(p=>p.id===pid);
+      if (p) { p.status='queue'; p.courtId=null; p.waitingSince=now; p.hasPlayed=true; if (p.dbId) dbAddPlayTime(p.dbId,playMins); }
+    });
+    court.status='available'; court.playerIds=[]; court.startTime=null;
+    showToast(`${court.name} done — no score recorded`);
+    renderAll();
+  }
+}
+
+// ─── AUTO-FILL ─────────────────────────────────────────────
+const LEVELS=['white','blue','green','yellow','red'];
+function levelIdx(l) { return LEVELS.indexOf(l); }
+function shuffle(arr) { for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];} return arr; }
+
+function prioritySort(pool) {
+  return [...pool].sort((a,b) => {
+    if (!a.hasPlayed&&!b.hasPlayed) return new Date(a.checkinTime)-new Date(b.checkinTime);
+    return new Date(a.waitingSince||a.checkinTime)-new Date(b.waitingSince||b.checkinTime);
+  });
+}
+
+function tryBuildGroup(anchor,pool,usedIds) {
+  const aIdx=levelIdx(anchor.level), group=[anchor];
+  const recent=new Set(anchor.lastPlayedWith||[]);
+  function fillSort(cands) {
+    return [...cands].sort((a,b)=>{
+      const af=recent.has(a.id)?1:0,bf=recent.has(b.id)?1:0;
+      if(af!==bf) return af-bf;
+      return new Date(a.waitingSince||a.checkinTime)-new Date(b.waitingSince||b.checkinTime);
+    });
+  }
+  function avail(fn) { return fillSort(pool.filter(p=>!usedIds.has(p.id)&&!group.includes(p)&&fn(p))); }
+  const sameLvl=avail(p=>levelIdx(p.level)===aIdx);
+  const freshSame=sameLvl.filter(p=>!recent.has(p.id));
+  const staleSame=sameLvl.filter(p=> recent.has(p.id));
+  const freshAdj =avail(p=>Math.abs(levelIdx(p.level)-aIdx)===1&&!recent.has(p.id));
+  for (const p of freshSame) { if(group.length>=4)break; group.push(p); }
+  if (group.length<4) for (const p of freshAdj)  { if(group.length>=4)break; group.push(p); }
+  for (const p of staleSame) { if(group.length>=4)break; group.push(p); }
+  if (group.length<4) for (const p of avail(p=>{const i=levelIdx(p.level);return(i===aIdx-1&&p.rating===5)||(i===aIdx+1&&p.rating===1);})) { if(group.length>=4)break; group.push(p); }
+  if (group.length<4) for (const p of avail(p=>Math.abs(levelIdx(p.level)-aIdx)===1)) { if(group.length>=4)break; group.push(p); }
+  return group;
+}
+
+function buildPlan(randomise=false) {
+  const available=S.courts.filter(c=>c.status==='available');
+  const allQueued=S.players.filter(p=>p.status==='queue'&&p.level!=='white');
+  if (!available.length||allQueued.length<2) return [];
+  const used=new Set(), plan=[];
+  for (let slot=0;slot<available.length;slot++) {
+    const remaining=allQueued.filter(p=>!used.has(p.id));
+    if (remaining.length<2) break;
+    let sorted=prioritySort(remaining);
+    if (randomise) {
+      const jit=[]; let i=0;
+      while(i<sorted.length){const t0=new Date(sorted[i].waitingSince||sorted[i].checkinTime);let j=i+1;while(j<sorted.length&&Math.abs(new Date(sorted[j].waitingSince||sorted[j].checkinTime)-t0)<90000)j++;jit.push(...shuffle(sorted.slice(i,j)));i=j;}
+      sorted=jit;
+    }
+    let assigned=false;
+    for (const anchor of sorted) {
+      if (used.has(anchor.id)) continue;
+      const tmp=new Set([...used,anchor.id]);
+      const group=tryBuildGroup(anchor,sorted,tmp);
+      if (group.length>=2) {
+        group.forEach(p=>used.add(p.id));
+        plan.push({ courtId:available[slot].id, playerIds:group.map(p=>p.id), matchType:getMatchType(group), dismissed:false });
+        assigned=true; break;
+      }
+    }
+    if (!assigned) break;
+  }
+  return plan;
+}
+
+function getMatchType(players) {
+  const nw=players.filter(p=>p.level!=='white'); const lvls=new Set(nw.map(p=>p.level));
+  if (!lvls.size) return 'new'; if (lvls.size>=2) return 'mixed';
+  const hasAdj=players.some(p=>players.some(o=>o.id!==p.id&&o.level!=='white'&&Math.abs(levelIdx(o.level)-levelIdx(p.level))===1));
+  return hasAdj?'mixed':'pure';
+}
+
+function previewAutofill() {
+  const plan=buildPlan(false);
+  if (!plan.length) {
+    const av=S.courts.filter(c=>c.status==='available').length;
+    const q=S.players.filter(p=>p.status==='queue'&&p.level!=='white').length;
+    if (!av) showToast('No available courts'); else if (q<2) showToast('Need at least 2 non-new players in queue'); else showToast('Could not form valid groups — check level adjacency');
+    return;
+  }
+  S.autofillPlan=plan; renderAutofillPreview();
+  document.getElementById('autofillPreview').classList.add('visible');
+}
+
+function rerandomiseAutofill() { const plan=buildPlan(true); if (!plan.length){showToast('Could not form alternative groups');return;} S.autofillPlan=plan; renderAutofillPreview(); }
+
+function renderAutofillPreview() {
+  const plan=S.autofillPlan;
+  const ml={pure:'Same level',mixed:'Mixed / Playing up-down',new:'New players'};
+  const mc={pure:'match-pure',mixed:'match-mixed',new:'match-pure'};
+  document.getElementById('previewGroups').innerHTML=plan.map((group,idx)=>{
+    if(group.dismissed)return'';
+    const court=S.courts.find(c=>c.id===group.courtId);
+    const players=group.playerIds.map(id=>S.players.find(p=>p.id===id)).filter(Boolean);
+    return `<div class="preview-group" id="pg-${idx}">
+      <span class="preview-court-label">${esc(court.name)}</span>
+      <div class="preview-players">${players.map(p=>{
+        const pI=levelIdx(p.level);
+        const isUp=p.rating===5&&players.some(o=>o.level!=='white'&&levelIdx(o.level)>pI);
+        const isDn=p.rating===1&&players.some(o=>o.level!=='white'&&levelIdx(o.level)<pI);
+        const tag=isUp?`<span style="font-size:9px;color:var(--red);font-weight:700">↑</span>`:isDn?`<span style="font-size:9px;color:var(--blue);font-weight:700">↓</span>`:'';
+        const promo=p.promotionEligible?`<span style="font-size:8px;color:var(--green);font-weight:700">★↑</span>`:'';
+        return `<span class="preview-pill"><span class="level-dot dot-${p.level}"></span>${esc(p.name)}${p.rating?`<span style="font-size:9px;color:#b8860b;letter-spacing:-1px">${'★'.repeat(p.rating)}</span>`:''}${tag}${promo}</span>`;
+      }).join('')}</div>
+      <span class="match-tag ${mc[group.matchType]||'match-pure'}">${ml[group.matchType]||group.matchType}</span>
+      <button class="preview-remove" onclick="dismissSuggestion(${idx})" title="Remove">✕</button>
+    </div>`;
+  }).join('');
+  const remaining=plan.filter(g=>!g.dismissed).length;
+  const hint=document.getElementById('autofillHint');
+  hint.textContent=`${remaining} court${remaining!==1?'s':''} suggested — remove unwanted, re-randomise, or confirm`;
+  hint.style.color='var(--accent)';
+  document.querySelector('.btn-confirm-auto').style.display=remaining?'':'none';
+  document.querySelector('.btn-rerandomise').style.display=remaining?'':'none';
+  const rem=document.getElementById('previewRemaining');
+  if (rem) rem.textContent=remaining?`${remaining} court${remaining!==1?'s':''} will be filled`:'All removed — click Cancel to close';
+}
+
+function dismissSuggestion(idx) {
+  if (!S.autofillPlan[idx]) return;
+  S.autofillPlan[idx].dismissed=true; renderAutofillPreview();
+  if (!S.autofillPlan.filter(g=>!g.dismissed).length) showToast('All suggestions removed — click Cancel to close');
+}
+
+function confirmAutofill() {
+  const active=S.autofillPlan.filter(g=>!g.dismissed);
+  const now=new Date();
+  active.forEach(({courtId,playerIds})=>{
+    const court=S.courts.find(c=>c.id===courtId);
+    if (!court||court.status!=='available') return;
+    court.status='playing'; court.playerIds=[...playerIds]; court.startTime=now;
+    playerIds.forEach(pid=>{
+      const p=S.players.find(p=>p.id===pid);
+      if (p) {
+        const wm=p.waitingSince?(now-new Date(p.waitingSince))/60000:0;
+        if (p.dbId) dbAddWaitTime(p.dbId,wm);
+        p.status='playing'; p.courtId=courtId; p.hasPlayed=true;
+        const partners=playerIds.filter(id=>id!==pid);
+        p.lastPlayedWith=[...new Set([...(p.lastPlayedWith||[]),...partners])].slice(-8);
+      }
+    });
+  });
+  const n=active.length;
+  S.autofillPlan=[]; document.getElementById('autofillPreview').classList.remove('visible'); resetAutofillHint();
+  if (n>0) showToast(`${n} court${n>1?'s':''} filled 🎾`);
+  renderAll();
+}
+
+function cancelAutofill() { S.autofillPlan=[]; document.getElementById('autofillPreview').classList.remove('visible'); resetAutofillHint(); }
+function resetAutofillHint() { const h=document.getElementById('autofillHint'); h.textContent='Check-in order priority. ★5 plays up, ★1 plays down if courts need filling. New players: manual only.'; h.style.color=''; }
+
+// ─── MANUAL ASSIGN MODAL ──────────────────────────────────
+function openAssignModal(preCourtId) {
+  const queued=S.players.filter(p=>p.status==='queue').sort((a,b)=>new Date(a.waitingSince||a.checkinTime)-new Date(b.waitingSince||b.checkinTime));
+  const avail=S.courts.filter(c=>c.status==='available');
+  if (!queued.length){showToast('No players in queue');return;} if (!avail.length){showToast('No available courts');return;}
+  document.getElementById('courtSelect').innerHTML=avail.map(c=>`<option value="${c.id}"${c.id===preCourtId?' selected':''}>${c.name}</option>`).join('');
+  S.assignSelected=[];
+  const list=document.getElementById('playerSelectList'); list.innerHTML='';
+  queued.forEach(p=>{
+    const el=makeSelectItem(p,()=>{
+      const i=S.assignSelected.indexOf(p.id);
+      if (i>-1){S.assignSelected.splice(i,1);el.classList.remove('selected');}
+      else{if(S.assignSelected.length>=4){showToast('Max 4 players per court');return;}S.assignSelected.push(p.id);el.classList.add('selected');}
+    }); list.appendChild(el);
+  });
+  document.getElementById('assignModal').classList.add('open');
+}
+
+function confirmAssign() {
+  const courtId=document.getElementById('courtSelect').value;
+  if (S.assignSelected.length<2){showToast('Select at least 2 players');return;}
+  const court=S.courts.find(c=>c.id===courtId), now=new Date();
+  court.status='playing'; court.playerIds=[...S.assignSelected]; court.startTime=now;
+  S.assignSelected.forEach(pid=>{
+    const p=S.players.find(p=>p.id===pid);
+    if (p){const wm=p.waitingSince?(now-new Date(p.waitingSince))/60000:0;if(p.dbId)dbAddWaitTime(p.dbId,wm);p.status='playing';p.courtId=courtId;p.hasPlayed=true;}
+  });
+  showToast(`${court.name} filled ✓`); closeModal('assignModal'); cancelAutofill(); renderAll();
+}
+
+// ─── ADD TO ACTIVE COURT ──────────────────────────────────
+function openAddToCourt(courtId) {
+  const court=S.courts.find(c=>c.id===courtId); if (!court) return;
+  const slots=4-court.playerIds.length;
+  if (slots<=0){showToast('Court is full');return;}
+  const queued=S.players.filter(p=>p.status==='queue').sort((a,b)=>new Date(a.waitingSince||a.checkinTime)-new Date(b.waitingSince||b.checkinTime));
+  if (!queued.length){showToast('No players in queue');return;}
+  S.addCourtId=courtId; S.addSelected=[];
+  document.getElementById('addModalTitle').textContent=`Add to ${court.name}`;
+  document.getElementById('slotsInfo').textContent=`${slots} open slot${slots>1?'s':''} available`;
+  const current=court.playerIds.map(id=>S.players.find(p=>p.id===id)).filter(Boolean);
+  document.getElementById('currentChips').innerHTML=current.map(p=>`<span class="current-chip"><span class="level-dot dot-${p.level}"></span>${esc(p.name)}</span>`).join('');
+  const list=document.getElementById('addPlayerList'); list.innerHTML='';
+  queued.forEach(p=>{
+    const el=makeSelectItem(p,()=>{
+      const i=S.addSelected.indexOf(p.id);
+      if (i>-1){S.addSelected.splice(i,1);el.classList.remove('selected');}
+      else{if(S.addSelected.length>=slots){showToast(`Only ${slots} slot${slots>1?'s':''} available`);return;}S.addSelected.push(p.id);el.classList.add('selected');}
+    }); list.appendChild(el);
+  });
+  document.getElementById('addToCourtModal').classList.add('open');
+}
+
+function confirmAddToCourt() {
+  if (!S.addSelected.length){showToast('Select at least 1 player');return;}
+  const court=S.courts.find(c=>c.id===S.addCourtId);
+  S.addSelected.forEach(pid=>{
+    if (!court.playerIds.includes(pid)){court.playerIds.push(pid);const p=S.players.find(p=>p.id===pid);if(p){p.status='playing';p.courtId=court.id;p.hasPlayed=true;}}
+  });
+  showToast(`${S.addSelected.length} player${S.addSelected.length>1?'s':''} added to ${court.name} ✓`);
+  closeModal('addToCourtModal'); renderAll();
+}
+
+// ─── COURT FINISHED → opens score modal ──────────────────
+function courtFinished(courtId) { openScoreModal(courtId); }
+
+function removeFromCourt(courtId,pid) {
+  const court=S.courts.find(c=>c.id===courtId);
+  court.playerIds=court.playerIds.filter(id=>id!==pid);
+  const p=S.players.find(p=>p.id===pid);
+  if (p){p.status='queue';p.courtId=null;p.waitingSince=new Date();p.hasPlayed=true;}
+  if (!court.playerIds.length){court.status='available';court.startTime=null;}
+  renderAll();
+}
+
+function filterQueue(level,btn) { S.queueFilter=level; document.querySelectorAll('.inner-tab').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); renderQueue(); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+// ─── RENDER ───────────────────────────────────────────────
+function renderAll() {
+  renderStats(); renderQueue(); renderRestingPanel(); renderCourts(); renderDisplay();
+  document.getElementById('courtCountDisplay').textContent=S.numCourts;
+  saveSession();
+}
+
+function renderStats() {
+  const now=Date.now();
+  const queued=S.players.filter(p=>p.status==='queue'&&p.level!=='white');
+  const q=S.players.filter(p=>p.status==='queue').length;
+  const pl=S.players.filter(p=>p.status==='playing').length;
+  const ac=S.courts.filter(c=>c.status==='playing').length;
+  let avgWait='—';
+  if (queued.length) { const total=queued.reduce((s,p)=>s+(now-new Date(p.waitingSince||p.checkinTime)),0); const m=Math.round(total/queued.length/60000); avgWait=m<1?'<1m':m+'m'; }
+  document.getElementById('stat-queue').textContent=q;
+  document.getElementById('stat-playing').textContent=pl;
+  document.getElementById('stat-courts').textContent=ac;
+  document.getElementById('stat-avgwait').textContent=avgWait;
+  document.getElementById('queueCount').textContent=q;
+  broadcastToTV();
+}
+
+function renderQueue() {
+  const list=document.getElementById('queueList');
+  const allQueued=S.players.filter(p=>p.status==='queue').sort((a,b)=>new Date(a.waitingSince||a.checkinTime)-new Date(b.waitingSince||b.checkinTime));
+  let players=allQueued;
+  if (S.queueFilter!=='all') players=players.filter(p=>p.level===S.queueFilter);
+  if (!players.length){list.innerHTML='<div class="empty-state">No players in queue.</div>';return;}
+  const now=Date.now();
+  list.innerHTML=players.map(p=>{
+    const pos=allQueued.findIndex(q=>q.id===p.id)+1;
+    const waitMins=Math.floor((now-new Date(p.waitingSince||p.checkinTime))/60000);
+    const waitStr=waitMins<1?'just now':waitMins+'m';
+    const urgency=waitMins>=30?'color:var(--red);font-weight:600':waitMins>=15?'color:var(--yellow);font-weight:600':'color:var(--muted)';
+    const lvlAbbr={blue:'BLU',green:'GRN',yellow:'YLW',red:'RED',white:'NEW'}[p.level]||p.level.toUpperCase();
+    const lvlBg={blue:'var(--blue-light)',green:'var(--green-light)',yellow:'var(--yellow-light)',red:'var(--red-light)',white:'var(--white-level-light)'}[p.level];
+    const lvlC=lvlColor(p.level);
+    const rBadge=p.rating?`<span class="rating-badge">${'★'.repeat(p.rating)}${'☆'.repeat(5-p.rating)}</span>`:'';
+    const eloBadge=p.elo?`<span class="elo-badge">${p.elo}</span>`:'';
+    const promoBadge=p.promotionEligible?`<span class="promo-badge">↑ Ready</span>`:'';
+    return `<div class="queue-item">
+      <span style="font-size:10px;color:var(--muted);min-width:16px;text-align:right;font-weight:600;flex-shrink:0">#${pos}</span>
+      <span style="display:inline-flex;align-items:center;padding:2px 7px;border-radius:20px;background:${lvlBg};color:${lvlC};font-size:10px;font-weight:700;letter-spacing:0.04em;flex-shrink:0">${lvlAbbr}</span>
+      <span class="queue-name">${esc(p.name)}</span>
+      ${eloBadge}${rBadge}${promoBadge}
+      <span style="font-size:10px;${urgency};white-space:nowrap;flex-shrink:0">⏳ ${waitStr}</span>
+      <button class="btn-rest" onclick="restPlayer('${p.id}')" title="Player wants to sit out">Rest</button>
+      <button class="btn-sm btn-edit" onclick="openEditPlayer('${p.id}')" title="Edit level & rating" style="flex-shrink:0">✎</button>
+      <button class="btn-sm btn-danger" onclick="removeFromQueue('${p.id}')" style="flex-shrink:0">✕</button>
+    </div>`;
+  }).join('');
+}
+
+function renderRestingPanel() {
+  const resting=S.players.filter(p=>p.status==='rest');
+  const header=document.getElementById('restPanelHeader');
+  const countBadge=document.getElementById('restCount');
+  const body=document.getElementById('restPanelBody');
+  const emptyMsg=document.getElementById('restEmptyMsg');
+  const icon=document.getElementById('restPanelToggleIcon');
+
+  if (resting.length>0) {
+    countBadge.textContent=resting.length; countBadge.style.display='';
+    header.classList.add('has-resting');
+  } else {
+    countBadge.style.display='none';
+    header.classList.remove('has-resting');
+  }
+
+  // Auto-open if there are resting players and panel is closed
+  if (resting.length>0 && !S.restPanelOpen) S.restPanelOpen=true;
+
+  body.style.display=S.restPanelOpen?'flex':'none';
+  icon.textContent=S.restPanelOpen?'▲':'▼';
+
+  if (!resting.length) { emptyMsg.style.display='block'; return; }
+  emptyMsg.style.display='none';
+
+  // Remove old rest items, keep emptyMsg
+  [...body.querySelectorAll('.rest-item')].forEach(el=>el.remove());
+
+  resting.forEach(p=>{
+    const lvlC=lvlColor(p.level);
+    const lvlBg={blue:'var(--blue-light)',green:'var(--green-light)',yellow:'var(--yellow-light)',red:'var(--red-light)',white:'var(--white-level-light)'}[p.level];
+    const lvlAbbr={blue:'BLU',green:'GRN',yellow:'YLW',red:'RED',white:'NEW'}[p.level];
+    const div=document.createElement('div'); div.className='rest-item';
+    div.innerHTML=`
+      <span style="display:inline-flex;align-items:center;padding:2px 7px;border-radius:20px;background:${lvlBg};color:${lvlC};font-size:10px;font-weight:700;flex-shrink:0">${lvlAbbr}</span>
+      <span class="rest-name">${esc(p.name)}</span>
+      <button class="btn-rejoin" onclick="rejoinQueue('${p.id}')">↩ Rejoin</button>
+      <button class="btn-sm btn-danger" onclick="removeFromQueue('${p.id}')" style="flex-shrink:0">✕</button>`;
+    body.appendChild(div);
+  });
+}
+
+function renderCourts() {
+  document.getElementById('courtsGrid').innerHTML=S.courts.map(court=>{
+    const players=court.playerIds.map(id=>S.players.find(p=>p.id===id)).filter(Boolean);
+    const slots=4-players.length;
+    const playing=court.status==='playing';
+    let timerHtml='';
+    if (playing&&court.startTime) {
+      const mins=Math.floor((Date.now()-new Date(court.startTime))/60000);
+      const elapsed=getElapsed(court.startTime);
+      const tcls=mins<15?'timer-fresh':mins<25?'timer-warm':mins<35?'timer-prime':'timer-overdue';
+      timerHtml=`<span class="timer-badge ${tcls}">⏱ ${elapsed}</span>`;
+    }
+    return `<div class="court-card ${playing?'active-court':''}">
+      <div class="court-card-header">
+        <input class="court-name-input" value="${esc(court.name)}" onchange="renameCourt('${court.id}',this.value)" title="Click to rename">
+        <span class="court-status ${playing?'status-playing':'status-available'}">${playing?'▶ Playing':'✓ Available'}</span>
+      </div>
+      <div class="court-players">
+        ${players.length?players.map(p=>{
+          const eloStr=p.elo?`<span style="font-size:9px;color:var(--muted)">${p.elo}</span>`:'';
+          const promo=p.promotionEligible?`<span class="promo-badge" style="font-size:8px;padding:1px 4px">↑</span>`:'';
+          return `<div class="court-player-item">
+            <span class="level-dot dot-${p.level}"></span>
+            <span style="flex:1">${esc(p.name)}</span>
+            ${eloStr}${promo}
+            ${p.rating?`<span style="font-size:10px;color:#b8860b;letter-spacing:-1px">${'★'.repeat(p.rating)}</span>`:''}
+            <button class="btn-sm btn-edit" style="font-size:10px;padding:2px 6px" onclick="openEditPlayer('${p.id}')" title="Edit">✎</button>
+            <button class="btn-sm btn-danger" style="font-size:10px;padding:2px 6px" onclick="removeFromCourt('${court.id}','${p.id}')">✕</button>
+          </div>`;
+        }).join(''):'<div class="court-empty-msg">No players assigned</div>'}
+      </div>
+      <div class="court-actions">
+        ${playing?`
+          ${timerHtml}
+          ${slots>0?`<button class="btn-sm btn-accent" onclick="openAddToCourt('${court.id}')">+ Add (${slots})</button>`:''}
+          <button class="btn-sm btn-danger" style="margin-left:auto" onclick="courtFinished('${court.id}')">Game Done →</button>
+        `:`
+          <button class="btn-sm btn-accent" style="margin-left:auto" onclick="openAssignModal('${court.id}')">+ Assign Players</button>
+        `}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderDisplay(stateOverride) {
+  const players=stateOverride?stateOverride.players:S.players;
+  const courts=stateOverride?stateOverride.courts:S.courts;
+  const dc=document.getElementById('displayCourts');
+  const dq=document.getElementById('displayQueue');
+  const daw=document.getElementById('displayAvgWait');
+  if (!dc) return;
+  dc.innerHTML=courts.map(court=>{
+    const cp=court.playerIds.map(id=>players.find(p=>p.id===id)).filter(Boolean);
+    return `<div class="display-court ${court.status==='playing'?'playing':''}">
+      <div class="display-court-header">
+        <span class="display-court-num">${esc(court.name)}</span>
+        <span class="display-court-badge ${court.status==='playing'?'badge-playing':'badge-available'}">${court.status==='playing'?'▶ Playing':'✓ Available'}</span>
+      </div>
+      <div class="display-court-players">
+        ${cp.length?cp.map(p=>`<div class="display-player"><span class="level-dot dot-${p.level}"></span>${esc(p.name)}</div>`).join(''):'<div class="display-court-empty">Waiting for players</div>'}
+      </div>
+    </div>`;
+  }).join('');
+  const queued=players.filter(p=>p.status==='queue');
+  if (dq) dq.innerHTML=queued.length?queued.map(p=>`<div class="display-queue-pill"><span class="level-dot dot-${p.level}"></span>${esc(p.name)}</div>`).join(''):'<span style="color:#3a5a48;font-size:13px">No players waiting</span>';
+  if (daw) {
+    const now=Date.now(), nwq=queued.filter(p=>p.level!=='white');
+    if (nwq.length){const t=nwq.reduce((s,p)=>s+(now-new Date(p.waitingSince||p.checkinTime)),0);const m=Math.round(t/nwq.length/60000);daw.textContent=`Avg wait: ${m<1?'<1m':m+'m'}`;}
+    else daw.textContent='';
+  }
+}
+
+// ─── HELPERS ──────────────────────────────────────────────
+function makeSelectItem(p, onClick) {
+  const el=document.createElement('div'); el.className='select-player-item';
+  const rStr=p.rating?`<span style="font-size:10px;color:#b8860b;letter-spacing:-1px">${'★'.repeat(p.rating)}</span>`:'';
+  const waitMins=Math.floor((Date.now()-new Date(p.waitingSince||p.checkinTime))/60000);
+  const waitStr=waitMins<1?'just now':waitMins+'m';
+  const urg=waitMins>=30?'color:var(--red);font-weight:600':waitMins>=15?'color:var(--yellow);font-weight:600':'color:var(--muted)';
+  const eloStr=p.elo?`<span class="elo-badge">${p.elo}</span>`:'';
+  el.innerHTML=`<span class="level-dot dot-${p.level}"></span><span class="player-name">${esc(p.name)}</span><span class="queue-meta">${lvlLabel(p.level)}</span>${rStr}${eloStr}<span style="font-size:10px;${urg};white-space:nowrap;margin-left:auto">⏳ ${waitStr}</span>`;
+  el.onclick=onClick; return el;
+}
+
+function lvlLabel(l) { return {blue:'Beginner',green:'Intermediate',yellow:'Advanced',red:'Expert',white:'New'}[l]||l; }
+function lvlColor(l) { return {blue:'var(--blue)',green:'var(--green)',yellow:'var(--yellow)',red:'var(--red)',white:'var(--white-level)'}[l]||'#999'; }
+function getElapsed(t) { const m=Math.floor((Date.now()-new Date(t))/60000); return m<1?'<1m':m<60?m+'m':Math.floor(m/60)+'h '+(m%60)+'m'; }
+function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function showToast(msg) { const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000); }
+function updateClock() { const n=new Date(); document.getElementById('displayClock').textContent=String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0'); }
+
+function switchView(view,e) {
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('view-'+view).classList.add('active');
+  e.target.classList.add('active');
+  if (view==='display')  renderDisplay();
+  if (view==='database') { renderDBSettings(); renderDBTable(); }
+}
+
+// ─── DATABASE TAB ─────────────────────────────────────────
+function renderDBSettings() {
+  document.getElementById('settingSessionDay').value   = DB.settings.sessionDay??'Sunday';
+  document.getElementById('settingSessionStart').value = DB.settings.sessionStart??'14:00';
+  document.getElementById('settingSessionEnd').value   = DB.settings.sessionEnd??'18:00';
+  const bytes=JSON.stringify(DB).length;
+  document.getElementById('dbStorageInfo').textContent=`${DB.players.length} player${DB.players.length!==1?'s':''} · ${DB.matches.length} matches recorded · ~${(bytes/1024).toFixed(1)} KB`;
+}
+
+function saveSettings() {
+  DB.settings.sessionDay   = document.getElementById('settingSessionDay').value;
+  DB.settings.sessionStart = document.getElementById('settingSessionStart').value;
+  DB.settings.sessionEnd   = document.getElementById('settingSessionEnd').value;
+  saveDB(); syncSessionLabel(); showToast('Settings saved ✓'); renderDBSettings();
+}
+
+function clearTodayStats() {
+  if (!confirm("Reset today's play and wait times for all players?")) return;
+  DB.players.forEach(p=>{p.todayPlayMins=0;p.todayWaitMins=0;p.todayDate=todayStr();});
+  saveDB(); renderDBTable(); showToast("Today's stats reset ✓");
+}
+
+function exportDB() {
+  const blob=new Blob([JSON.stringify(DB,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob), a=document.createElement('a');
+  a.href=url; a.download=`uq-social-tennis-db-${todayStr()}.json`; a.click(); URL.revokeObjectURL(url);
+}
+
+function importDB(event) {
+  const file=event.target.files[0]; if (!file) return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    try {
+      const parsed=JSON.parse(e.target.result);
+      if (!parsed.players||!Array.isArray(parsed.players)){showToast('⚠ Invalid file');return;}
+      const incoming=parsed.players.length, existing=DB.players.length;
+      parsed.players.forEach(p=>{const idx=DB.players.findIndex(e=>e.dbId===p.dbId);if(idx>-1)DB.players[idx]={...DB.players[idx],...p};else DB.players.push(p);});
+      if (parsed.matches) parsed.matches.forEach(m=>{if (!DB.matches.find(x=>x.matchId===m.matchId)) DB.matches.push(m);});
+      if (parsed.settings) DB.settings={...parsed.settings,...DB.settings};
+      DB.nextDbId=Math.max(DB.nextDbId,...DB.players.map(p=>p.dbId||0))+1;
+      saveDB(); renderDBTable(); renderDBSettings(); syncSessionLabel();
+      const added=DB.players.length-existing, updated=incoming-Math.max(0,added);
+      showToast(`Import complete — ${added} new, ${updated} updated ✓`);
+    } catch { showToast('⚠ Could not read file'); }
+    event.target.value='';
+  };
+  reader.readAsText(file);
+}
+
+function addBlankDBPlayer() {
+  const name=window.prompt('Player full name:'); if (!name||!name.trim()) return;
+  const existing=DB.players.find(p=>p.name.toLowerCase()===name.trim().toLowerCase());
+  if (existing){showToast(`"${existing.name}" already exists (ID #${existing.dbId})`);return;}
+  const rec=dbGetOrCreate(name.trim(),'white',0); ensureElo(rec);
+  saveDB(); renderDBTable(); renderDBSettings();
+  showToast(`${rec.name} added`);
+}
+
+// ─── DB QUICK QUEUE PANEL ─────────────────────────────────
+let dbQueueSelected=new Set();
+function toggleDbQueuePanel() {
+  const body=document.getElementById('dbQueuePanelBody'), icon=document.getElementById('dbQueueToggleIcon');
+  const open=body.style.display==='none';
+  body.style.display=open?'block':'none'; icon.textContent=open?'▲ collapse':'▼ expand';
+  if (open){dbQueueSelected.clear();renderDbQueueList();document.getElementById('dbQueueSearch').focus();}
+}
+
+function renderDbQueueList() {
+  const q=(document.getElementById('dbQueueSearch')?.value||'').toLowerCase();
+  const activeIds=new Set(S.players.filter(p=>p.status==='queue'||p.status==='playing').map(p=>p.dbId).filter(Boolean));
+  let players=DB.players.filter(p=>!q||p.name.toLowerCase().includes(q)||lvlLabel(p.level).toLowerCase().includes(q)).sort((a,b)=>a.name.localeCompare(b.name));
+  const list=document.getElementById('dbQueueList');
+  if (!players.length){list.innerHTML='<div style="padding:14px;font-size:12px;color:var(--muted);text-align:center">No players found</div>';return;}
+  list.innerHTML=players.map(p=>{
+    const alreadyIn=activeIds.has(p.dbId), checked=dbQueueSelected.has(p.dbId);
+    const eloStr=p.elo?` · ${p.elo}`:'';
+    return `<label class="db-queue-item${alreadyIn?' already-in':''}">
+      <input type="checkbox" ${checked?'checked':''} ${alreadyIn?'disabled':''} onchange="toggleDbQueueSelect(${p.dbId},this.checked)">
+      <span class="level-dot" style="background:${lvlColor(p.level)}"></span>
+      <span style="flex:1;font-size:13px">${esc(p.name)}</span>
+      <span style="font-size:10px;color:var(--muted)">${lvlLabel(p.level)}${p.rating?' · '+'★'.repeat(p.rating):''}${eloStr}</span>
+      ${alreadyIn?'<span style="font-size:9px;color:var(--accent);font-weight:600">IN SESSION</span>':''}
+    </label>`;
+  }).join('');
+  document.getElementById('dbQueueSelCount').textContent=dbQueueSelected.size;
+}
+
+function toggleDbQueueSelect(dbId,checked) { if(checked)dbQueueSelected.add(dbId);else dbQueueSelected.delete(dbId); document.getElementById('dbQueueSelCount').textContent=dbQueueSelected.size; }
+
+function addSelectedFromDB() {
+  if (!dbQueueSelected.size){showToast('Select at least one player');return;}
+  const now=new Date(); let added=0;
+  dbQueueSelected.forEach(dbId=>{
+    const rec=DB.players.find(p=>p.dbId===dbId); if (!rec) return;
+    if (S.players.find(p=>p.dbId===dbId&&(p.status==='queue'||p.status==='playing'))) return;
+    dbRecordCheckin(rec);
+    S.players.push({ id:'p'+Date.now()+Math.random(), dbId:rec.dbId, name:rec.name, level:rec.level, rating:rec.rating, elo:rec.elo, promotionEligible:rec.promotionEligible||false, status:'queue', courtId:null, checkinTime:now, waitingSince:now, hasPlayed:false, lastPlayedWith:[] });
+    added++;
+  });
+  dbQueueSelected.clear(); renderDbQueueList(); cancelAutofill(); renderAll();
+  if (added>0) showToast(`${added} player${added!==1?'s':''} checked in ✓`);
+  else showToast('All selected players already in session');
+}
+
+function sortDB(col) { if(DB_SORT.col===col)DB_SORT.dir=DB_SORT.dir==='asc'?'desc':'asc';else{DB_SORT.col=col;DB_SORT.dir='asc';}renderDBTable(); }
+
+function renderDBTable() {
+  const q=(document.getElementById('dbSearch')?.value||'').toLowerCase();
+  const lvlF=document.getElementById('dbFilterLevel')?.value||'';
+  const tbody=document.getElementById('dbTableBody'), count=document.getElementById('dbCount');
+  let rows=DB.players.filter(p=>(!q||p.name.toLowerCase().includes(q)||lvlLabel(p.level).toLowerCase().includes(q))&&(!lvlF||p.level===lvlF));
+  const {col,dir}=DB_SORT;
+  rows.sort((a,b)=>{let av=a[col]??0,bv=b[col]??0;if(typeof av==='string')av=av.toLowerCase();if(typeof bv==='string')bv=bv.toLowerCase();if(av<bv)return dir==='asc'?-1:1;if(av>bv)return dir==='asc'?1:-1;return 0;});
+  document.querySelectorAll('.db-table th').forEach(th=>{th.classList.remove('sorted-asc','sorted-desc');if(th.getAttribute('onclick')===`sortDB('${col}')`)th.classList.add(`sorted-${dir}`);});
+  count.textContent=`${rows.length} of ${DB.players.length} player${DB.players.length!==1?'s':''}`;
+  if (!rows.length){tbody.innerHTML=`<tr><td colspan="13" class="db-empty">${DB.players.length?'No players match your search.':'No players yet — check in someone to get started.'}</td></tr>`;return;}
+
+  tbody.innerHTML=rows.map(p=>{
+    const todayPlay=p.todayDate===todayStr()?p.todayPlayMins:0;
+    const todayWait=p.todayDate===todayStr()?p.todayWaitMins:0;
+    const w=p.totalGamesWon||0, l=p.totalGamesLost||0;
+    const winPct=w+l>0?Math.round(100*w/(w+l)):null;
+    const avgWait=p.totalSessions>0?Math.round((p.totalWaitMins||0)/p.totalSessions):0;
+    const eloDisplay=p.elo?p.elo:'—';
+    const peakDisplay=p.peakElo?p.peakElo:'—';
+    const promoFlag=p.promotionEligible?`<span class="promo-flag">↑ Promo</span>`:'';
+    const demFlag=p.belowFloorCount>0?`<span class="demotion-flag">${p.belowFloorCount}/${ELO_DEMOTION_FLOOR}↓</span>`:'';
+    return `<tr>
+      <td><span class="db-id-badge">${p.dbId}</span></td>
+      <td><input class="db-cell-input" value="${esc(p.name)}" onchange="dbUpdateField(${p.dbId},'name',this.value)" style="min-width:120px">${promoFlag}${demFlag}</td>
+      <td><select class="db-cell-select" onchange="dbUpdateField(${p.dbId},'level',this.value)">
+        ${['blue','green','yellow','red','white'].map(lv=>`<option value="${lv}"${p.level===lv?' selected':''}>${lvlLabel(lv)}</option>`).join('')}
+      </select></td>
+      <td class="elo-cell">${eloDisplay}<span class="elo-peak">peak: ${peakDisplay}${p.peakEloDate?' ('+p.peakEloDate+')':''}</span></td>
+      <td style="text-align:center">${p.totalSessions||0}</td>
+      <td style="text-align:center">${p.totalMatches||0}</td>
+      <td style="text-align:center">${w}–${l}</td>
+      <td style="text-align:center">${winPct!==null?winPct+'%':'—'}</td>
+      <td title="${formatMins(p.totalCourtMins||0)} total">${formatMins(p.totalCourtMins||0)}</td>
+      <td title="${avgWait} min avg wait">${avgWait>0?avgWait+'m':'—'}</td>
+      <td style="font-size:10px;color:var(--muted)">▶${Math.round(todayPlay)}m<br>⏳${Math.round(todayWait)}m</td>
+      <td style="color:var(--muted);font-size:11px">${p.lastSeen||'—'}</td>
+      <td><button class="db-row-del" data-del-id="${p.dbId}" onclick="dbDeletePlayer(${p.dbId})" title="Delete">✕</button></td>
+    </tr>`;
+  }).join('');
+}
+
+function dbUpdateField(dbId,field,value) {
+  const rec=DB.players.find(p=>p.dbId===dbId); if (!rec) return;
+  rec[field]=value;
+  if (field==='name'){const dup=DB.players.find(p=>p.dbId!==dbId&&p.name.toLowerCase()===value.toLowerCase());if(dup)showToast(`⚠ Another player named "${value}" exists (ID #${dup.dbId})`);}
+  saveDB();
+  if (field==='level'||field==='rating'){const sp=S.players.find(p=>p.dbId===dbId);if(sp){sp[field]=value;renderAll();}}
+}
+
+function dbUpdateTodayField(dbId,field,value) {
+  const rec=DB.players.find(p=>p.dbId===dbId); if (!rec) return;
+  dbResetTodayIfNeeded(rec); rec[field]=value; saveDB();
+}
+
+function dbDeletePlayer(dbId) {
+  const rec=DB.players.find(p=>p.dbId===dbId); if (!rec) return;
+  const btn=document.querySelector(`[data-del-id="${dbId}"]`); if (!btn) return;
+  if (btn.dataset.confirming==='true') {
+    DB.players=DB.players.filter(p=>p.dbId!==dbId); saveDB(); renderDBTable(); renderDBSettings();
+    showToast(`${rec.name} removed from database`);
+  } else {
+    btn.dataset.confirming='true'; btn.textContent='Sure?'; btn.style.color='var(--red)'; btn.style.fontWeight='600'; btn.style.fontSize='10px';
+    setTimeout(()=>{if(btn.dataset.confirming==='true'){btn.dataset.confirming='false';btn.textContent='✕';btn.style.color='';btn.style.fontWeight='';btn.style.fontSize='';}},3000);
+  }
+}
+
+function formatMins(m) {
+  if (!m||m<1) return '0m';
+  const h=Math.floor(m/60),min=Math.round(m%60);
+  return h>0?`${h}h ${min}m`:`${min}m`;
+}
+
+// ─── TV POP-OUT ────────────────────────────────────────────
+const TV_CHANNEL='uqSocialTennisTV';
+let tvWindow=null;
+function popOutTV() { const url=window.location.href.split('?')[0]+'?tv=1'; tvWindow=window.open(url,'UQSocialTennisTV','width=1280,height=720,menubar=no,toolbar=no'); if (!tvWindow) showToast('Pop-out blocked — allow pop-ups for this page'); }
+function broadcastToTV() { try{localStorage.setItem(TV_CHANNEL,JSON.stringify({players:S.players,courts:S.courts,settings:DB.settings,ts:Date.now()}));}catch(e){} }
+
+(function detectTVMode() {
+  if (!window.location.search.includes('tv=1')) return;
+  function initTV() {
+    document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+    const dv=document.getElementById('view-display'); if(dv)dv.classList.add('active');
+    const nav=document.querySelector('nav'); if(nav)nav.style.display='none';
+    try{const raw=localStorage.getItem(TV_CHANNEL);if(raw){const s=JSON.parse(raw);renderDisplay(s);const lbl=document.getElementById('displaySessionLabel');if(lbl&&s.settings?.sessionDay)lbl.textContent=`${s.settings.sessionDay} · ${fmt12(s.settings.sessionStart)} – ${fmt12(s.settings.sessionEnd)}`;}}catch(e){}
+  }
+  if (document.readyState==='loading') document.addEventListener('DOMContentLoaded',initTV); else initTV();
+  window.addEventListener('storage',e=>{if(e.key!==TV_CHANNEL||!e.newValue)return;try{const s=JSON.parse(e.newValue);renderDisplay(s);const lbl=document.getElementById('displaySessionLabel');if(lbl&&s.settings?.sessionDay)lbl.textContent=`${s.settings.sessionDay} · ${fmt12(s.settings.sessionStart)} – ${fmt12(s.settings.sessionEnd)}`;}catch(e){}});
+  setInterval(()=>{try{const raw=localStorage.getItem(TV_CHANNEL);if(!raw)return;const s=JSON.parse(raw);if(Date.now()-s.ts<10000)renderDisplay(s);}catch(e){}},2000);
+})();
+
+document.addEventListener('click',e=>{if(!e.target.closest('.checkin-name-wrap'))closeAC();});
+init();
+</script>
+</body>
+</html>
