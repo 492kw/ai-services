@@ -366,7 +366,7 @@
     .proof-row strong { color: var(--ink); }
     .proof-row span { color: var(--muted); }
 
-    .testimonials { display: grid; gap: 1rem; }
+    .testimonials { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem; }
     .testimonial-card {
       background: var(--surface);
       border: 1px solid var(--line);
@@ -635,19 +635,39 @@
       <div class="wrap">
         <div class="section-head center">
           <h2 id="testimonials-title">What users say.</h2>
-          <p>Real feedback from people using the tennis app in their sessions.</p>
+          <p>Feedback from social tennis organisers testing the court allocation app in real sessions.</p>
         </div>
         <div class="testimonials">
           <article class="testimonial-card">
             <div class="testimonial-body">
               <div class="testimonial-quotes">
-                <p>I tested a commercial product recently and it was unimpressive. On first sight, yours is better.</p>
-                <p>The TV link is excellent. That is what Carl intended for our current system but it was more problematic back then.</p>
-                <p>Yes, yes. Understood. But I just comment that people are selling systems that are not impressive.</p>
+                <p>Hard to tell from a short test run on my phone between meetings, but first impression is damn good. Definitely keen for a deeper dive.</p>
               </div>
               <div class="testimonial-attr">
-                <strong>Peter</strong>
-                <span>Social tennis session operator</span>
+                <strong>Social committee lead</strong>
+                <span>Testing during a busy workday</span>
+              </div>
+            </div>
+          </article>
+          <article class="testimonial-card">
+            <div class="testimonial-body">
+              <div class="testimonial-quotes">
+                <p>I had wondered how easy a web app could be developed for us, so thanks for taking the plunge on this.</p>
+              </div>
+              <div class="testimonial-attr">
+                <strong>Committee member</strong>
+                <span>Looking for a better system</span>
+              </div>
+            </div>
+          </article>
+          <article class="testimonial-card">
+            <div class="testimonial-body">
+              <div class="testimonial-quotes">
+                <p>Looks impressive. Probably need to demo with you.</p>
+              </div>
+              <div class="testimonial-attr">
+                <strong>Club organiser</strong>
+                <span>First reaction to the app</span>
               </div>
             </div>
           </article>
