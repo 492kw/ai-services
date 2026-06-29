@@ -1,465 +1,643 @@
 <!DOCTYPE html>
 <html lang="en-AU">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Services — AI Automation for Small Business</title>
-    <meta name="description" content="On-premise AI document processing for Brisbane SMBs. Hardware + automation + support. No cloud, no per-use fees.">
-    <style>
-        :root {
-            --cream: #FAF6F0;
-            --copper: #B87333;
-            --copper-light: #D4956A;
-            --copper-dark: #8B5E2E;
-            --charcoal: #2D2D2D;
-            --card: #FFFFFF;
-            --text: #3A3A3A;
-            --muted: #6B6B6B;
-            --border: #E8E0D5;
-            --green: #5B8C5A;
-            --green-lt: #EEF7EC;
-            --blue-lt: #EEF2FD;
-            --amber: #B45309;
-            --amber-lt: #FEF3E2;
-            --purple-lt: #F5F0FF;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simon Fung - AI, automation and web consulting</title>
+  <meta name="description" content="Practical consulting for small businesses: AI automation, custom web tools, document workflows, websites and operational prototypes by Simon Fung in Brisbane.">
+  <meta property="og:title" content="Simon Fung - AI, automation and web consulting">
+  <meta property="og:description" content="Portfolio-led consulting for small businesses that need practical software, automation and websites.">
+  <meta property="og:type" content="website">
+  <meta name="theme-color" content="#f7f3ec">
+  <style>
+    :root {
+      --paper: #f7f3ec;
+      --paper-2: #eee7da;
+      --surface: #fffdf8;
+      --ink: #181713;
+      --text: #292720;
+      --muted: #605b50;
+      --line: #d8cfc0;
+      --accent: #a5642c;
+      --accent-2: #7b4d25;
+      --soft: #ead7c2;
+      --green: #58745a;
+      --shadow: 0 22px 70px rgba(83, 60, 35, 0.12);
+      --radius: 22px;
+      --radius-small: 14px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
 
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: var(--cream); color: var(--text); line-height: 1.7; }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: var(--sans);
+      background:
+        radial-gradient(circle at 16% 8%, rgba(165, 100, 44, 0.13), transparent 28rem),
+        linear-gradient(135deg, #fbf7ef 0%, var(--paper) 48%, #eee4d5 100%);
+      color: var(--text);
+      line-height: 1.55;
+    }
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 50;
+      opacity: 0.18;
+      background-image:
+        linear-gradient(rgba(24, 23, 19, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(24, 23, 19, 0.035) 1px, transparent 1px);
+      background-size: 56px 56px;
+      mask-image: linear-gradient(to bottom, black, transparent 72%);
+    }
+    a { color: inherit; }
+    img { max-width: 100%; display: block; }
+    .skip-link {
+      position: absolute;
+      left: -999px;
+      top: 10px;
+      background: var(--ink);
+      color: white;
+      padding: 0.7rem 1rem;
+      border-radius: 10px;
+      z-index: 100;
+    }
+    .skip-link:focus { left: 10px; }
+    .wrap { width: min(1180px, calc(100% - 40px)); margin: 0 auto; }
 
-        /* Navigation */
-        nav { background: var(--card); border-bottom: 1px solid var(--border); padding: 0 2rem; position: sticky; top: 0; z-index: 10; }
-        nav .inner { max-width: 1100px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding: 1rem 0; }
-        nav .logo { font-size: 1.3rem; font-weight: 700; color: var(--charcoal); }
-        nav .logo span { color: var(--copper); }
-        nav a { color: var(--muted); text-decoration: none; margin-left: 2rem; font-size: 0.95rem; transition: color 0.2s; }
-        nav a:hover { color: var(--copper); }
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      backdrop-filter: blur(18px);
+      background: rgba(247, 243, 236, 0.82);
+      border-bottom: 1px solid rgba(216, 207, 192, 0.74);
+    }
+    .nav {
+      height: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1.2rem;
+    }
+    .brand {
+      text-decoration: none;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      color: var(--ink);
+      font-size: 1.08rem;
+      white-space: nowrap;
+    }
+    .brand span { color: var(--accent); }
+    nav ul {
+      display: flex;
+      align-items: center;
+      gap: 1.2rem;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      white-space: nowrap;
+    }
+    nav a {
+      color: var(--muted);
+      text-decoration: none;
+      font-weight: 650;
+      font-size: 0.92rem;
+    }
+    nav a:hover, nav a:focus { color: var(--ink); }
+    .nav-cta {
+      background: var(--ink);
+      color: white;
+      padding: 0.66rem 0.92rem;
+      border-radius: 999px;
+      text-decoration: none;
+      font-weight: 800;
+      white-space: nowrap;
+      transition: transform 180ms ease, background 180ms ease;
+    }
+    .nav-cta:hover, .nav-cta:focus { background: var(--accent-2); transform: translateY(-1px); }
+    .nav-cta:active { transform: translateY(1px); }
 
-        /* Hero */
-        .hero { padding: 5rem 2rem; text-align: center; max-width: 800px; margin: 0 auto; }
-        .hero h1 { font-size: 2.8rem; font-weight: 800; color: var(--charcoal); line-height: 1.2; margin-bottom: 1rem; }
-        .hero h1 .big { font-size: 4.2rem; display: block; color: var(--charcoal); }
-        .hero h1 span { color: var(--copper); }
-        .hero p { font-size: 1.2rem; color: var(--muted); max-width: 600px; margin: 0 auto 2rem; }
-        .hero .cta { display: inline-block; background: var(--copper); color: #fff; padding: 0.9rem 2rem; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 1.05rem; transition: background 0.2s; }
-        .hero .cta:hover { background: var(--copper-light); }
+    main { overflow: hidden; }
+    .hero {
+      min-height: calc(100dvh - 72px);
+      display: grid;
+      grid-template-columns: minmax(0, 1.02fr) minmax(360px, 0.98fr);
+      gap: 2.6rem;
+      align-items: center;
+      padding: 2.4rem 0 3rem;
+    }
+    .kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      letter-spacing: 0.08em;
+      color: var(--accent-2);
+      background: rgba(234, 215, 194, 0.78);
+      border: 1px solid rgba(165, 100, 44, 0.22);
+      padding: 0.42rem 0.66rem;
+      border-radius: 999px;
+      margin-bottom: 1.2rem;
+    }
+    .hero h1 {
+      margin: 0;
+      max-width: 720px;
+      color: var(--ink);
+      font-size: clamp(2.9rem, 6vw, 5.7rem);
+      line-height: 0.9;
+      letter-spacing: -0.085em;
+      text-wrap: balance;
+    }
+    .hero h1 strong { color: var(--accent); font-weight: 900; }
+    .hero-copy {
+      max-width: 560px;
+      margin: 1.15rem 0 0;
+      color: var(--muted);
+      font-size: clamp(1rem, 1.2vw, 1.12rem);
+    }
+    .hero-actions {
+      display: flex;
+      gap: 0.85rem;
+      flex-wrap: wrap;
+      margin-top: 1.4rem;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 999px;
+      min-height: 48px;
+      padding: 0.82rem 1.16rem;
+      text-decoration: none;
+      font-weight: 850;
+      transition: transform 180ms ease, background 180ms ease, border-color 180ms ease;
+      border: 1px solid transparent;
+    }
+    .btn.primary { background: var(--ink); color: white; }
+    .btn.secondary { background: var(--surface); color: var(--ink); border-color: var(--line); }
+    .btn:hover, .btn:focus { transform: translateY(-2px); }
+    .btn:active { transform: translateY(1px); }
 
-        /* Sections */
-        section { padding: 4rem 2rem; }
-        section .inner { max-width: 1100px; margin: 0 auto; }
-        section h2 { font-size: 2rem; font-weight: 700; color: var(--charcoal); text-align: center; margin-bottom: 0.5rem; }
-        section .subtitle { text-align: center; color: var(--muted); margin-bottom: 3rem; font-size: 1.05rem; }
+    .hero-panel {
+      position: relative;
+      padding: 1rem;
+      border-radius: 30px;
+      background: linear-gradient(145deg, rgba(255,255,255,0.8), rgba(238,231,218,0.75));
+      border: 1px solid rgba(216, 207, 192, 0.9);
+      box-shadow: var(--shadow);
+    }
+    .hero-panel::before {
+      content: "";
+      position: absolute;
+      inset: -18px auto auto -22px;
+      width: 150px;
+      height: 150px;
+      border-radius: 999px;
+      background: rgba(165, 100, 44, 0.12);
+      z-index: -1;
+    }
+    .work-stack {
+      display: grid;
+      gap: 0.9rem;
+    }
+    .work-shot {
+      overflow: hidden;
+      border-radius: 20px;
+      border: 1px solid var(--line);
+      background: var(--surface);
+    }
+    .work-shot img { aspect-ratio: 16 / 9; width: 100%; object-fit: cover; object-position: top left; }
+    .work-shot.small-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.9rem;
+      border: 0;
+      background: transparent;
+    }
+    .work-shot.small-grid figure {
+      margin: 0;
+      overflow: hidden;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: white;
+    }
+    .work-shot.small-grid img { aspect-ratio: 4 / 3; object-fit: cover; object-position: top left; }
+    .panel-caption {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 1rem 0.2rem 0.05rem;
+      font-family: var(--mono);
+      color: var(--muted);
+      font-size: 0.78rem;
+    }
 
-        /* Services */
-        .services { background: var(--card); }
-        .services-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; }
-        .service-card { background: var(--cream); border: 1px solid var(--border); border-radius: 12px; padding: 2rem; text-align: center; transition: transform 0.2s, box-shadow 0.2s; }
-        .service-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,0.06); }
-        .service-card .icon { font-size: 2.5rem; margin-bottom: 1rem; }
-        .service-card h3 { font-size: 1.2rem; color: var(--charcoal); margin-bottom: 0.5rem; }
-        .service-card p { color: var(--muted); font-size: 0.95rem; }
+    section { padding: 5.4rem 0; }
+    .section-head {
+      max-width: 760px;
+      margin-bottom: 2.4rem;
+    }
+    .section-head.center { margin-left: auto; margin-right: auto; text-align: center; }
+    h2 {
+      margin: 0;
+      color: var(--ink);
+      letter-spacing: -0.055em;
+      line-height: 0.96;
+      font-size: clamp(2.3rem, 5.2vw, 4.9rem);
+      text-wrap: balance;
+    }
+    .section-head p {
+      max-width: 650px;
+      margin: 1rem 0 0;
+      color: var(--muted);
+      font-size: 1.08rem;
+    }
+    .section-head.center p { margin-left: auto; margin-right: auto; }
 
-        /* How it works — 3 components */
-        .flow-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; align-items: stretch; }
-        .flow-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; position: relative; }
-        .flow-card .flow-head { padding: 1.25rem; text-align: center; color: #fff; }
-        .flow-card .flow-head .f-icon { font-size: 1.5rem; margin-bottom: 0.4rem; }
-        .flow-card .flow-head h3 { font-size: 1.05rem; color: #fff; }
-        .flow-card .flow-head .f-tag { display: inline-block; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; background: rgba(255,255,255,0.15); padding: 2px 10px; border-radius: 10px; margin-top: 4px; }
-        .flow-card .flow-body { padding: 1.25rem; font-size: 0.95rem; color: var(--muted); }
-        .flow-card.fc-setup .flow-head { background: var(--copper); }
-        .flow-card.fc-sub .flow-head { background: var(--green); }
-        .flow-card.fc-feat .flow-head { background: var(--amber); }
-        .flow-arrows { display: flex; justify-content: center; align-items: center; gap: 0.5rem; margin: 1rem 0; color: var(--muted); font-size: 1.2rem; }
+    .services-band {
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: 1.2rem;
+      align-items: stretch;
+    }
+    .service-intro {
+      background: var(--ink);
+      color: white;
+      border-radius: var(--radius);
+      padding: 2rem;
+      min-height: 440px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .service-intro h3 {
+      margin: 0;
+      font-size: clamp(2rem, 4vw, 4.2rem);
+      letter-spacing: -0.06em;
+      line-height: 0.95;
+      max-width: 610px;
+    }
+    .service-intro p { color: #efe7da; max-width: 570px; font-size: 1.08rem; }
+    .service-list {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    .service-card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-small);
+      padding: 1.25rem;
+      min-height: 190px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: transform 180ms ease, box-shadow 180ms ease;
+    }
+    .service-card:hover { transform: translateY(-3px); box-shadow: 0 14px 35px rgba(83, 60, 35, 0.10); }
+    .service-card h3 { margin: 0; color: var(--ink); font-size: 1.12rem; letter-spacing: -0.025em; }
+    .service-card p { margin: 0.8rem 0 0; color: var(--muted); font-size: 0.95rem; }
+    .service-card .num { font-family: var(--mono); color: var(--accent); font-size: 0.78rem; }
 
-        @media (max-width: 800px) {
-            .flow-grid { grid-template-columns: 1fr; max-width: 400px; margin: 0 auto; }
-        }
+    .portfolio-grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 1.1rem;
+    }
+    .project {
+      position: relative;
+      overflow: hidden;
+      border-radius: var(--radius);
+      background: var(--surface);
+      border: 1px solid var(--line);
+      box-shadow: 0 18px 55px rgba(83, 60, 35, 0.08);
+    }
+    .project.large { grid-column: span 7; }
+    .project.medium { grid-column: span 5; }
+    .project.wide { grid-column: span 12; display: grid; grid-template-columns: 1.1fr 0.9fr; }
+    .project figure { margin: 0; overflow: hidden; background: #f1eadf; }
+    .project:not(.wide) figure img { height: 340px; width: 100%; object-fit: cover; object-position: top left; }
+    .project.wide figure img { height: 100%; min-height: 410px; width: 100%; object-fit: cover; object-position: top left; }
+    .project-body { padding: 1.35rem; display: flex; flex-direction: column; gap: 0.8rem; }
+    .project h3 { margin: 0; color: var(--ink); font-size: clamp(1.35rem, 2vw, 2rem); letter-spacing: -0.045em; line-height: 1; }
+    .project p { margin: 0; color: var(--muted); }
+    .tags { display: flex; gap: 0.45rem; flex-wrap: wrap; }
+    .tag {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      color: var(--accent-2);
+      background: rgba(234, 215, 194, 0.68);
+      border: 1px solid rgba(165, 100, 44, 0.22);
+      padding: 0.28rem 0.46rem;
+      border-radius: 999px;
+    }
+    .project-link { color: var(--ink); font-weight: 850; text-decoration-thickness: 2px; text-underline-offset: 4px; }
 
-        /* Hardware Tiers */
-        .tier-section { background: var(--card); }
-        .tier-table { width: 100%; border-collapse: collapse; background: var(--cream); border-radius: 12px; overflow: hidden; }
-        .tier-table th { text-align: left; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); padding: 12px 16px; border-bottom: 2px solid var(--border); font-weight: 600; background: var(--card); }
-        .tier-table td { padding: 14px 16px; font-size: 0.9rem; border-bottom: 1px solid var(--border); vertical-align: top; }
-        .tier-table tr:last-child td { border-bottom: none; }
-        .tier-table td:first-child { font-weight: 700; color: var(--charcoal); }
-        .tier-badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 4px; font-size: 0.85rem; font-weight: 700; }
-        .tier-badge.entry { background: var(--blue-lt); color: #1B4FD8; }
-        .tier-badge.standard { background: var(--green-lt); color: #0B6E4F; }
-        .tier-badge.performance { background: var(--purple-lt); color: #5B21B6; }
-        .spec-tag { display: inline-block; background: var(--card); border: 1px solid var(--border); border-radius: 3px; padding: 1px 6px; font-family: monospace; font-size: 0.8rem; color: var(--charcoal); margin: 1px 2px; }
-        .best-for { font-size: 0.85rem; color: var(--muted); font-style: italic; }
+    .proof {
+      display: grid;
+      grid-template-columns: 0.85fr 1.15fr;
+      gap: 1.2rem;
+      align-items: stretch;
+    }
+    .proof-card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 1.6rem;
+    }
+    .proof-card h3 { margin: 0 0 0.8rem; color: var(--ink); letter-spacing: -0.035em; font-size: 1.5rem; }
+    .proof-card p { color: var(--muted); margin: 0; }
+    .proof-list { display: grid; gap: 0.8rem; }
+    .proof-row {
+      display: grid;
+      grid-template-columns: 170px 1fr;
+      gap: 1rem;
+      align-items: start;
+      padding: 1rem;
+      border-radius: var(--radius-small);
+      background: rgba(255, 253, 248, 0.72);
+      border: 1px solid var(--line);
+    }
+    .proof-row strong { color: var(--ink); }
+    .proof-row span { color: var(--muted); }
 
-        @media (max-width: 640px) {
-            .tier-table, .tier-table thead, .tier-table tbody, .tier-table tr, .tier-table th, .tier-table td { display: block; }
-            .tier-table thead { display: none; }
-            .tier-table td { padding: 8px 12px; border-bottom: none; }
-            .tier-table td::before { content: attr(data-label); font-weight: 600; display: block; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 2px; }
-            .tier-table tr { border: 1px solid var(--border); border-radius: 8px; margin-bottom: 1rem; background: var(--card); overflow: hidden; }
-            .tier-table tr td:first-child { background: var(--cream); padding: 10px 12px; }
-        }
+    .process {
+      background: rgba(255, 253, 248, 0.62);
+      border-block: 1px solid rgba(216, 207, 192, 0.72);
+    }
+    .process-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.95rem;
+    }
+    .process-step {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-small);
+      padding: 1.2rem;
+      min-height: 220px;
+    }
+    .process-step .label { font-family: var(--mono); color: var(--accent); font-size: 0.78rem; }
+    .process-step h3 { margin: 1.3rem 0 0.7rem; color: var(--ink); font-size: 1.25rem; letter-spacing: -0.035em; }
+    .process-step p { color: var(--muted); margin: 0; font-size: 0.95rem; }
 
-        /* Subscription Tiers */
-        .sub-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
-        .sub-card { background: var(--card); border: 2px solid var(--border); border-radius: 12px; padding: 2rem; display: flex; flex-direction: column; position: relative; }
-        .sub-card.featured { border-color: var(--copper); }
-        .sub-card.featured::before { content: '★ Most Popular'; position: absolute; top: -14px; left: 50%; transform: translateX(-50%); background: var(--copper); color: #fff; padding: 4px 16px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.5px; }
-        .sub-card h3 { font-size: 1.15rem; color: var(--charcoal); margin-bottom: 0.3rem; }
-        .sub-card .sub-meta { font-size: 0.8rem; color: var(--muted); margin-bottom: 1rem; }
-        .sub-card .price-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); }
-        .sub-card ul { list-style: none; padding: 0; margin: 1rem 0; flex: 1; }
-        .sub-card ul li { padding: 0.35rem 0; font-size: 0.9rem; color: var(--text); border-bottom: 1px solid var(--cream); display: flex; justify-content: space-between; }
-        .sub-card ul li:last-child { border-bottom: none; }
-        .sub-card ul li .sk { color: var(--muted); }
-        .sub-card ul li .sv { font-weight: 600; text-align: right; }
-        .sub-card .btn { display: inline-block; background: var(--copper); color: #fff; padding: 0.65rem 1.5rem; border-radius: 8px; text-decoration: none; font-weight: 600; text-align: center; transition: background 0.2s; }
-        .sub-card .btn:hover { background: var(--copper-light); }
-        .sub-card .btn-outline { background: transparent; color: var(--copper); border: 2px solid var(--copper); }
-        .sub-card .btn-outline:hover { background: var(--cream); }
+    .contact-box {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 2rem;
+      align-items: center;
+      background: var(--ink);
+      color: white;
+      border-radius: 30px;
+      padding: clamp(1.5rem, 4vw, 3rem);
+      box-shadow: var(--shadow);
+    }
+    .contact-box h2 { color: white; font-size: clamp(2.2rem, 4.8vw, 4.6rem); }
+    .contact-box p { color: #eee5d7; max-width: 660px; font-size: 1.05rem; }
+    .contact-actions { display: grid; gap: 0.8rem; min-width: 280px; }
+    .contact-actions a {
+      background: white;
+      color: var(--ink);
+      border-radius: 999px;
+      padding: 0.9rem 1rem;
+      text-decoration: none;
+      font-weight: 850;
+      text-align: center;
+      transition: transform 180ms ease;
+    }
+    .contact-actions a:hover, .contact-actions a:focus { transform: translateY(-2px); }
+    .contact-actions a:active { transform: translateY(1px); }
+    .contact-actions .outline { background: rgba(255,255,255,0.08); color: white; border: 1px solid rgba(255,255,255,0.28); }
 
-        @media (max-width: 800px) {
-            .sub-grid { grid-template-columns: 1fr; max-width: 400px; margin: 0 auto; }
-        }
+    footer {
+      border-top: 1px solid var(--line);
+      padding: 2rem 0;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+    footer .foot {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    footer a { color: var(--ink); font-weight: 700; }
 
-        /* Feature Additions */
-        .feat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
-        .feat-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 1.25rem; border-top: 3px solid var(--copper); }
-        .feat-card .feat-icon { font-size: 1.3rem; margin-bottom: 0.5rem; display: block; }
-        .feat-card h4 { font-size: 0.95rem; font-weight: 600; color: var(--charcoal); margin-bottom: 0.3rem; }
-        .feat-card p { font-size: 0.85rem; color: var(--muted); line-height: 1.5; }
-
-        @media (max-width: 640px) {
-            .feat-grid { grid-template-columns: repeat(2, 1fr); }
-        }
-        @media (max-width: 420px) {
-            .feat-grid { grid-template-columns: 1fr; }
-        }
-
-        /* Why Section */
-        .why { background: var(--card); }
-        .why-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; }
-        .why-card { background: var(--cream); border: 1px solid var(--border); border-radius: 12px; padding: 2rem; }
-        .why-card h3 { font-size: 1.1rem; color: var(--charcoal); margin-bottom: 0.5rem; }
-        .why-card p { color: var(--muted); font-size: 0.95rem; }
-        .why-card .check { color: var(--green); font-weight: 700; }
-
-        /* Contact */
-        .contact-info { text-align: center; background: var(--copper); color: #fff; padding: 4rem 2rem; border-radius: 12px; }
-        .contact-info h2 { color: #fff; }
-        .contact-info .subtitle { color: rgba(255,255,255,0.8); }
-        .contact-info a { color: #fff; text-decoration: underline; font-weight: 600; }
-
-        /* Footer */
-        footer { text-align: center; padding: 2rem; color: var(--muted); font-size: 0.9rem; border-top: 1px solid var(--border); }
-
-        @media (max-width: 640px) {
-            nav .nav-links { display: none; }
-            .hero h1 { font-size: 2rem; }
-            .hero p { font-size: 1rem; }
-            section { padding: 3rem 1rem; }
-        }
-    </style>
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; animation: none !important; }
+    }
+    @media (max-width: 980px) {
+      .hero, .services-band, .proof, .contact-box { grid-template-columns: 1fr; }
+      .hero { min-height: auto; padding-top: 3.2rem; }
+      .project.large, .project.medium, .project.wide { grid-column: span 12; }
+      .project.wide { grid-template-columns: 1fr; }
+      .process-grid { grid-template-columns: repeat(2, 1fr); }
+      .service-intro { min-height: 330px; }
+    }
+    @media (max-width: 760px) {
+      .wrap { width: min(100% - 28px, 1180px); }
+      .nav { height: auto; min-height: 66px; padding: 0.8rem 0; }
+      nav ul { display: none; }
+      .nav-cta { padding: 0.62rem 0.82rem; }
+      .hero h1 { font-size: clamp(2.7rem, 16vw, 4.3rem); }
+      .work-shot.small-grid { grid-template-columns: 1fr; }
+      section { padding: 4rem 0; }
+      .service-list, .process-grid { grid-template-columns: 1fr; }
+      .proof-row { grid-template-columns: 1fr; gap: 0.35rem; }
+      .project:not(.wide) figure img, .project.wide figure img { height: auto; min-height: 0; aspect-ratio: 16 / 10; }
+      footer .foot { flex-direction: column; }
+    }
+  </style>
 </head>
 <body>
-
-<nav>
-    <div class="inner">
-        <div class="logo"><span>AI</span> Services</div>
-        <div class="nav-links">
-            <a href="#services">Services</a>
-            <a href="#how">How It Works</a>
-            <a href="#hardware">Hardware</a>
-            <a href="#pricing">Pricing</a>
-            <a href="#contact">Contact</a>
-            <a href="tradie-demo/">TradieFlow Demo</a>
-            <a href="./social-tennis-program.html">Tennis App Showcase</a>
-        </div>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header>
+    <div class="wrap nav">
+      <a class="brand" href="#top">Simon <span>Fung</span></a>
+      <nav aria-label="Main navigation">
+        <ul>
+          <li><a href="#services">Services</a></li>
+          <li><a href="#portfolio">Work</a></li>
+          <li><a href="#approach">Approach</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+      </nav>
+      <a class="nav-cta" href="#contact">Get in touch</a>
     </div>
-</nav>
+  </header>
 
-<section class="hero">
-    <h1><span class="big">AI Assistant</span><br><span>That Lives in Your Office</span></h1>
-    <p>We install private AI automation in your business — on hardware you own — that handles your repetitive document, data, and admin tasks automatically. Your data never leaves the building.</p>
-    <a href="#contact" class="cta">Start the Conversation</a>
-</section>
-
-<section class="services" id="services">
-    <div class="inner">
-        <h2>What We Do</h2>
-        <p class="subtitle">AI-powered automation and web development for the tasks that slow your business down</p>
-        <div class="services-grid">
-            <div class="service-card">
-                <div class="icon">📄</div>
-                <h3>PDF to Spreadsheet</h3>
-                <p>Invoices, purchase orders, timesheets — any PDF with data that needs collecting. AI extracts what matters and populates your spreadsheets automatically.</p>
-            </div>
-            <div class="service-card">
-                <div class="icon">🔍</div>
-                <h3>OCR &amp; Document Understanding</h3>
-                <p>Scanned documents, receipts, handwritten notes — turned into structured data for your bookkeeping and records. Try the <a href="ocr-demo/" style="color:var(--copper); font-weight:600;">live invoice-to-CSV demo</a>.</p>
-            </div>
-            <div class="service-card">
-                <div class="icon">⚙️</div>
-                <h3>Custom Workflow Automation</h3>
-                <p>Every business has that one annoying manual process. We build bespoke automations that fit your actual workflow — not a one-size-fits-all product.</p>
-            </div>
-            <div class="service-card">
-                <div class="icon">🔐</div>
-                <h3>On-Premise, Not Cloud</h3>
-                <p>Everything runs on a PC in your office. Financial documents, legal files, client data — it never leaves your building.</p>
-            </div>
-            <div class="service-card">
-                <div class="icon">🤝</div>
-                <h3>Remote Support &amp; Ongoing Improvement</h3>
-                <p>We support everything remotely. As your needs grow, we add new automations — all without another site visit.</p>
-            </div>
-            <div class="service-card">
-                <div class="icon">🏢</div>
-                <h3>Built for Brisbane SMBs</h3>
-                <p>Local understanding of how Australian small businesses operate. Tradies, accountants, real estate, legal — we know your workflow.</p>
-            </div>
-            <div class="service-card">
-                <div class="icon">🌐</div>
-                <h3>Website Creation &amp; Manipulation</h3>
-                <p>Need a website built or updated? We design and develop sites tailored to your business. Better yet — we can demo the creation and manipulation <a href="website-demo/" style="color:var(--copper); font-weight:600;">live right here</a>, so you see exactly what's happening as we build it.</p>
-            </div>
+  <main id="main">
+    <section class="wrap hero" id="top" aria-labelledby="hero-title">
+      <div>
+        <div class="kicker">Brisbane consulting - AI, web and automation</div>
+        <h1 id="hero-title">Practical software consulting for <strong>small businesses.</strong></h1>
+        <p class="hero-copy">I design and build useful web tools, AI workflows and automation prototypes that solve real admin problems.</p>
+        <div class="hero-actions">
+          <a class="btn primary" href="#portfolio">View work</a>
+          <a class="btn secondary" href="#services">See services</a>
         </div>
-    </div>
-</section>
-
-<section id="how">
-    <div class="inner">
-        <h2>How the Service Works</h2>
-        <p class="subtitle">Three components that work together — one-off setup, ongoing support, and additions as you grow</p>
-        <div class="flow-arrows">Setup &nbsp;→&nbsp; Subscribe &nbsp;+&nbsp; Add Features</div>
-        <div class="flow-grid">
-            <div class="flow-card fc-setup">
-                <div class="flow-head">
-                    <div class="f-icon">🖥️</div>
-                    <h3>Setup Package</h3>
-                    <span class="f-tag">One-Time</span>
-                </div>
-                <div class="flow-body">
-                    We supply and configure the hardware, install it in your office, build your first automation workflow, and hand over before we leave. Fixed price — no surprises.
-                </div>
-            </div>
-            <div class="flow-card fc-sub">
-                <div class="flow-head">
-                    <div class="f-icon">🔧</div>
-                    <h3>Monthly Subscription</h3>
-                    <span class="f-tag">Ongoing</span>
-                </div>
-                <div class="flow-body">
-                    Remote monitoring, break-fix support, minor adjustments, and software updates keep your existing automations running reliably. Choose Essential, Standard, or Premium.
-                </div>
-            </div>
-            <div class="flow-card fc-feat">
-                <div class="flow-head">
-                    <div class="f-icon">✨</div>
-                    <h3>Feature Additions</h3>
-                    <span class="f-tag">Per Project</span>
-                </div>
-                <div class="flow-body">
-                    Need a new workflow? Each addition is scoped, quoted at a fixed price, and agreed before work starts. Added remotely — no disruption to your office.
-                </div>
-            </div>
+      </div>
+      <aside class="hero-panel" aria-label="Portfolio preview screenshots">
+        <div class="work-stack">
+          <div class="work-shot">
+            <img src="assets/portfolio/tennis-app.png" alt="Screenshot of the UQ social tennis court allocation app with queue and court panels">
+          </div>
+          <div class="work-shot small-grid">
+            <figure><img src="assets/portfolio/invoice-ocr-demo.png" alt="Screenshot of invoice OCR demo with upload controls and extracted table"></figure>
+            <figure><img src="assets/portfolio/tradieflow-demo.png" alt="Screenshot of TradieFlow chat workflow demo for trade businesses"></figure>
+          </div>
         </div>
-    </div>
-</section>
+        <div class="panel-caption"><span>real project screenshots</span><span>built and deployed</span></div>
+      </aside>
+    </section>
 
-<section class="tier-section" id="hardware">
-    <div class="inner">
-        <h2>Choose Your Hardware Tier</h2>
-        <p class="subtitle">More powerful hardware means faster processing and the ability to run larger AI models — choose what fits your workload</p>
-        <table class="tier-table">
-            <thead>
-                <tr>
-                    <th>Tier</th>
-                    <th>Specifications</th>
-                    <th>Performance</th>
-                    <th>Price (approx)</th>
-                    <th>Best For</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td><span class="tier-badge entry">⚡ Entry</span></td>
-                    <td>
-                        <span class="spec-tag">16-32 GB RAM</span>
-                        <span class="spec-tag">CPU only</span>
-                        <span class="spec-tag">512 GB NVMe</span>
-                        <span class="spec-tag">Mini PC</span>
-                    </td>
-                    <td><span class="spec-tag">10-18 tok/s</span><br><span style="font-size:0.8rem;color:var(--muted);">7B Q4 model</span></td>
-                    <td style="font-weight:600; color:var(--copper); white-space:nowrap;">~$1,000</td>
-                    <td class="best-for">1 automation &middot; light volume &middot; single repetitive task e.g. invoice extraction</td>
-                </tr>
-                <tr>
-                    <td><span class="tier-badge standard">🚀 Standard</span></td>
-                    <td>
-                        <span class="spec-tag">32-64 GB RAM</span>
-                        <span class="spec-tag">RTX 3060 12 GB</span>
-                        <span class="spec-tag">1 TB NVMe</span>
-                        <span class="spec-tag">Workstation</span>
-                    </td>
-                    <td><span class="spec-tag">40-60 tok/s</span><br><span style="font-size:0.8rem;color:var(--muted);">7B-13B VLM</span></td>
-                    <td style="font-weight:600; color:var(--copper); white-space:nowrap;">~$2,000</td>
-                    <td class="best-for">2-4 automations &middot; OCR + bookkeeping + email triage concurrently</td>
-                </tr>
-                <tr>
-                    <td><span class="tier-badge performance">🏆 Performance</span></td>
-                    <td>
-                        <span class="spec-tag">64-128 GB RAM</span>
-                        <span class="spec-tag">RTX 3090 24 GB</span>
-                        <span class="spec-tag">2 TB NVMe</span>
-                        <span class="spec-tag">Tower</span>
-                    </td>
-                    <td><span class="spec-tag">80-120 tok/s</span><br><span style="font-size:0.8rem;color:var(--muted);">13B-32B VLM</span></td>
-                    <td style="font-weight:600; color:var(--copper); white-space:nowrap;">~$4,000</td>
-                    <td class="best-for">5+ automations &middot; multi-department &middot; real-time processing &middot; future-proof</td>
-                </tr>
-            </tbody>
-        </table>
-        <p style="text-align:center; font-size:0.85rem; color:var(--muted); margin-top:1rem;"><em>Prices are approximate and may vary due to hardware availability and market conditions.</em></p>
-    </div>
-</section>
-
-<section id="pricing">
-    <div class="inner">
-        <h2>Simple Pricing</h2>
-        <p class="subtitle">Transparent. No lock-in. No surprises.</p>
-        <p style="text-align:center; font-size:0.9rem; color:var(--muted); margin-bottom:1.5rem;">Monthly subscription covers ongoing support of <strong style="color:var(--charcoal);">existing</strong> automations. New features always quoted separately.</p>
-        <div class="sub-grid">
-            <div class="sub-card">
-                <h3>Essential</h3>
-                <div class="sub-meta">Entry-tier support</div>
-                <div class="price-label">$100 / month + GST</div>
-                <ul>
-                    <li><span class="sk">Monitoring</span><span class="sv">Monthly</span></li>
-                    <li><span class="sk">Response</span><span class="sv">Next biz day</span></li>
-                    <li><span class="sk">Adjustments</span><span class="sv">1 / month</span></li>
-                    <li><span class="sk">Updates</span><span class="sv">Quarterly</span></li>
-                    <li><span class="sk">Best for</span><span class="sv">1 automation</span></li>
-                </ul>
-                <a href="#contact" class="btn btn-outline">Ask About It</a>
-            </div>
-            <div class="sub-card featured">
-                <h3>Standard</h3>
-                <div class="sub-meta">Best value for most businesses</div>
-                <div class="price-label">$180 / month + GST</div>
-                <ul>
-                    <li><span class="sk">Monitoring</span><span class="sv">Weekly</span></li>
-                    <li><span class="sk">Response</span><span class="sv">Same biz day</span></li>
-                    <li><span class="sk">Adjustments</span><span class="sv">3 / month</span></li>
-                    <li><span class="sk">Updates</span><span class="sv">Monthly</span></li>
-                    <li><span class="sk">Check-in call</span><span class="sv">Monthly</span></li>
-                    <li><span class="sk">Best for</span><span class="sv">1-3 automations</span></li>
-                </ul>
-                <a href="#contact" class="btn">Let's Talk</a>
-            </div>
-            <div class="sub-card">
-                <h3>Premium</h3>
-                <div class="sub-meta">For high-volume operations</div>
-                <div class="price-label">$500 / month + GST</div>
-                <ul>
-                    <li><span class="sk">Monitoring</span><span class="sv">Daily + alerts</span></li>
-                    <li><span class="sk">Response</span><span class="sv">Within 4 hrs</span></li>
-                    <li><span class="sk">Adjustments</span><span class="sv">Unlimited</span></li>
-                    <li><span class="sk">Updates</span><span class="sv">Rolling</span></li>
-                    <li><span class="sk">Feature queue</span><span class="sv">Priority</span></li>
-                    <li><span class="sk">Best for</span><span class="sv">3+ automations</span></li>
-                </ul>
-                <a href="#contact" class="btn btn-outline">Ask About It</a>
-            </div>
+    <section id="services">
+      <div class="wrap">
+        <div class="section-head">
+          <h2>Consulting that ends in working software.</h2>
+          <p>Not a strategy deck. I scope the problem, build the smallest useful version, test it, and leave you with something you can actually use.</p>
         </div>
-
-        <div style="margin-top:2.5rem;">
-            <h3 style="text-align:center; font-size:1.1rem; color:var(--charcoal); margin-bottom:1rem;">Feature Additions — Fixed Price Per Project</h3>
-            <div class="feat-grid">
-                <div class="feat-card">
-                    <span class="feat-icon">📄</span>
-                    <h4>New Document Type</h4>
-                    <p>Add another format to an existing workflow — purchase orders, dockets, contracts</p>
-                </div>
-                <div class="feat-card">
-                    <span class="feat-icon">🔗</span>
-                    <h4>Software Integration</h4>
-                    <p>Connect to your accounting, CRM, or practice management software</p>
-                </div>
-                <div class="feat-card">
-                    <span class="feat-icon">📊</span>
-                    <h4>Scheduled Reporting</h4>
-                    <p>Auto-generate KPI dashboards or financial summaries on a schedule</p>
-                </div>
-                <div class="feat-card">
-                    <span class="feat-icon">📧</span>
-                    <h4>Email Processing</h4>
-                    <p>Automatically read, sort, log, and respond to common enquiries</p>
-                </div>
-                <div class="feat-card">
-                    <span class="feat-icon">🕐</span>
-                    <h4>Timesheet &amp; Expenses</h4>
-                    <p>Process staff timesheets or expense claims from photos or PDFs</p>
-                </div>
-                <div class="feat-card">
-                    <span class="feat-icon">⚙️</span>
-                    <h4>Custom Workflow</h4>
-                    <p>Any repetitive task that follows a pattern — we scope, quote, and build it</p>
-                </div>
-            </div>
+        <div class="services-band">
+          <div class="service-intro">
+            <h3>What I can help with</h3>
+            <p>AI is only useful when it connects to the messy parts of a business: documents, bookings, emails, spreadsheets, websites and follow-up.</p>
+          </div>
+          <div class="service-list">
+            <article class="service-card">
+              <span class="num">01</span>
+              <div><h3>AI workflow prototypes</h3><p>Document extraction, inbox triage, structured data capture, internal assistants and repetitive admin flows.</p></div>
+            </article>
+            <article class="service-card">
+              <span class="num">02</span>
+              <div><h3>Custom web tools</h3><p>Small applications for bookings, queues, client intake, reporting, scheduling and operational control panels.</p></div>
+            </article>
+            <article class="service-card">
+              <span class="num">03</span>
+              <div><h3>Website builds</h3><p>Public websites, landing pages and demos that explain what you do without sounding like generic software copy.</p></div>
+            </article>
+            <article class="service-card">
+              <span class="num">04</span>
+              <div><h3>Automation support</h3><p>Practical help connecting tools, testing processes and improving systems that already exist in your business.</p></div>
+            </article>
+          </div>
         </div>
-    </div>
-</section>
+      </div>
+    </section>
 
-<section class="why" id="why">
-    <div class="inner">
-        <h2>Why This Works</h2>
-        <p class="subtitle">What makes this different from every other AI solution</p>
-        <div class="why-grid">
-            <div class="why-card">
-                <h3><span class="check">✓</span> Your Data, Your Office</h3>
-                <p>Sensitive financial and legal documents stay on a machine you own, in your building. Not a cloud server in some other country.</p>
-            </div>
-            <div class="why-card">
-                <h3><span class="check">✓</span> No Per-Use Fees</h3>
-                <p>One-time hardware cost plus a fixed monthly support fee. No per-document charges, no SaaS subscriptions.</p>
-            </div>
-            <div class="why-card">
-                <h3><span class="check">✓</span> Built for Your Actual Process</h3>
-                <p>No generic template. We build automation for the exact documents your business handles — invoices, timesheets, receipts, whatever you have.</p>
-            </div>
-            <div class="why-card">
-                <h3><span class="check">✓</span> Remote Support, Zero Hassle</h3>
-                <p>We monitor and maintain everything via encrypted remote access. If something needs fixing or improving, we handle it — you don't lift a finger.</p>
-            </div>
-            <div class="why-card">
-                <h3><span class="check">✓</span> 20+ Years IT Experience</h3>
-                <p>Brisbane-based IT professional. We understand how local businesses work and what they actually need — not what Silicon Valley thinks they need.</p>
-            </div>
-            <div class="why-card">
-                <h3><span class="check">✓</span> One Clear Cost, No Surprises</h3>
-                <p>You know what you're paying upfront. Hardware with a transparent margin, setup fee, and optional support retainer. No hidden anything.</p>
-            </div>
+    <section id="portfolio" aria-labelledby="portfolio-title">
+      <div class="wrap">
+        <div class="section-head center">
+          <h2 id="portfolio-title">Selected work and demos.</h2>
+          <p>Examples of the kind of practical systems I build: lightweight, specific and designed around real-world use.</p>
         </div>
-    </div>
-</section>
+        <div class="portfolio-grid">
+          <article class="project large">
+            <figure><img src="assets/portfolio/tennis-app.png" alt="UQ social tennis app showing player queue, court allocation and control panels"></figure>
+            <div class="project-body">
+              <div class="tags"><span class="tag">web app</span><span class="tag">operations</span><span class="tag">tennis</span></div>
+              <h3>Social tennis court allocation app</h3>
+              <p>A browser-based tool for managing players, levels, queues, court assignments, timers and match flow for a busy social tennis session.</p>
+              <a class="project-link" href="social-tennis-program.html">Open demo</a>
+            </div>
+          </article>
 
-<section>
-    <div class="inner">
-        <div class="contact-info" id="contact">
-            <h2>Let's Talk About Automating Your Business</h2>
-            <p class="subtitle">No sales pitch. We'll tell you honestly whether AI can help your workflow.</p>
-            <p style="margin-top:1.5rem; font-size:1.05rem;">
-                📧 <a href="mailto:simonfungwork@gmail.com">simonfungwork@gmail.com</a><br>
-                📍 Brisbane, Australia
-            </p>
+          <article class="project medium">
+            <figure><img src="assets/portfolio/invoice-ocr-demo.png" alt="Invoice OCR demo showing a document upload panel and parsed invoice results"></figure>
+            <div class="project-body">
+              <div class="tags"><span class="tag">AI</span><span class="tag">documents</span><span class="tag">CSV</span></div>
+              <h3>Invoice OCR to CSV demo</h3>
+              <p>A client-side proof of concept that reads invoice files, extracts text and turns line items into downloadable spreadsheet data.</p>
+              <a class="project-link" href="ocr-demo/">Open demo</a>
+            </div>
+          </article>
+
+          <article class="project wide">
+            <figure><img src="assets/portfolio/tradieflow-demo.png" alt="TradieFlow demo showing customer messages and AI response workflow panels"></figure>
+            <div class="project-body">
+              <div class="tags"><span class="tag">automation</span><span class="tag">tradies</span><span class="tag">messaging</span></div>
+              <h3>TradieFlow assistant concept</h3>
+              <p>A practical assistant concept for solo and small trade businesses. It focuses on missed enquiries, simple lead capture, job details and follow-up without forcing a heavy CRM process.</p>
+              <a class="project-link" href="tradie-demo/">Open demo</a>
+            </div>
+          </article>
+
+          <article class="project medium">
+            <figure><img src="assets/portfolio/website-build-demo.png" alt="Website build demo showing a clean business homepage layout"></figure>
+            <div class="project-body">
+              <div class="tags"><span class="tag">websites</span><span class="tag">landing pages</span></div>
+              <h3>Live website build demo</h3>
+              <p>A simple demonstration page for showing how a small business website can be shaped, edited and improved quickly.</p>
+              <a class="project-link" href="website-demo/">Open demo</a>
+            </div>
+          </article>
+
+          <article class="project large">
+            <figure><img src="assets/portfolio/tennis-app.png" alt="Close view of the tennis app interface with courts and player controls"></figure>
+            <div class="project-body">
+              <div class="tags"><span class="tag">consulting</span><span class="tag">systems thinking</span></div>
+              <h3>From problem to working prototype</h3>
+              <p>The same pattern applies across projects: understand the workflow, build a focused version, test it with real use and improve what matters.</p>
+              <a class="project-link" href="#approach">Read approach</a>
+            </div>
+          </article>
         </div>
+      </div>
+    </section>
+
+    <section id="approach" class="process">
+      <div class="wrap">
+        <div class="section-head">
+          <h2>How a project usually runs.</h2>
+          <p>Small businesses do not need a bloated delivery process. They need a clear problem, a working build and honest testing.</p>
+        </div>
+        <div class="process-grid">
+          <article class="process-step"><span class="label">Scope</span><h3>Find the real bottleneck</h3><p>We map the workflow and decide what should be automated, simplified or left alone.</p></article>
+          <article class="process-step"><span class="label">Build</span><h3>Create a usable first version</h3><p>I build a lean prototype or page that demonstrates the core value quickly.</p></article>
+          <article class="process-step"><span class="label">Test</span><h3>Use real files and scenarios</h3><p>We test with actual documents, tasks, messages or users instead of polished mock examples.</p></article>
+          <article class="process-step"><span class="label">Improve</span><h3>Keep what works</h3><p>The next round focuses on the useful parts: reliability, speed, copy, layout and handover.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section aria-labelledby="proof-title">
+      <div class="wrap proof">
+        <div class="proof-card">
+          <h2 id="proof-title">Why this is different.</h2>
+          <p>I am not selling a generic AI package. The portfolio matters because it shows the kind of work I do: small, specific systems that make sense in context.</p>
+        </div>
+        <div class="proof-list">
+          <div class="proof-row"><strong>Practical background</strong><span>Long-running IT and systems experience, with a focus on tools that can be maintained after the first build.</span></div>
+          <div class="proof-row"><strong>Prototype first</strong><span>Before committing to a large build, I prefer proving the workflow with a small working version.</span></div>
+          <div class="proof-row"><strong>Local and direct</strong><span>Based in Brisbane, with direct communication and no unnecessary platform lock-in.</span></div>
+          <div class="proof-row"><strong>Clear handover</strong><span>Projects are documented enough that the system can be explained, tested and improved later.</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="contact">
+      <div class="wrap contact-box">
+        <div>
+          <h2>Have a workflow worth fixing?</h2>
+          <p>Send through the problem, the current process and what a good outcome would look like. I will tell you whether a small build makes sense.</p>
+        </div>
+        <div class="contact-actions">
+          <a href="mailto:simonfungwork@gmail.com?subject=Consulting%20enquiry">Email Simon</a>
+          <a class="outline" href="#portfolio">Review portfolio</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap foot">
+      <span>Simon Fung - AI, automation and web consulting. Brisbane, Australia.</span>
+      <span><a href="#top">Back to top</a></span>
     </div>
-</section>
-
-<footer>
-    <p>AI Services — AI Automation Services for Small Business. Brisbane, Australia.</p>
-</footer>
-
+  </footer>
 </body>
 </html>

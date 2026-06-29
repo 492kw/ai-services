@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Invoice OCR Demo — AI Services</title>
+  <meta name="description" content="Client-side OCR demo: upload a PDF or image invoice, extract text, parse rows, and download CSV.">
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@4.10.38/build/pdf.min.mjs" type="module"></script>
+  <style>
+    :root {
+      --cream: #FAF6F0;
+      --copper: #B87333;
+      --copper-dark: #8B5E2E;
+      --charcoal: #222222;
+      --text: #2D2D2D;
+      --muted: #555555;
+      --card: #FFFFFF;
+      --border: #E8E0D5;
+      --green: #0B6E4F;
+      --green-light: #EEF7EC;
+      --blue-light: #EEF2FD;
+      --danger: #B42318;
+      --danger-light: #FFF1F0;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+      background: var(--cream);
+      color: var(--text);
+      line-height: 1.6;
+    }
+    nav {
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 1.5rem;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    nav .inner {
+      max-width: 1120px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+    nav a {
+      color: var(--copper-dark);
+      font-weight: 700;
+      text-decoration: none;
+    }
+    .logo { color: var(--charcoal); font-weight: 800; }
+    .logo span { color: var(--copper); }
+    header {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 4rem 1.5rem 2rem;
+      text-align: center;
+    }
+    header .badge {
+      display: inline-block;
+      background: var(--green-light);
+      color: var(--green);
+      padding: 0.35rem 0.8rem;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 800;
+      margin-bottom: 1rem;
+      border: 1px solid #CFE8D3;
+    }
+    h1 {
+      margin: 0 0 1rem;
+      color: var(--charcoal);
+      font-size: clamp(2rem, 5vw, 3.4rem);
+      line-height: 1.1;
+    }
+    header p {
+      color: var(--text);
+      font-size: 1.15rem;
+      max-width: 760px;
+      margin: 0 auto;
+    }
+    main {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 1rem 1.5rem 4rem;
+    }
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 1.5rem;
+      box-shadow: 0 12px 40px rgba(45, 45, 45, 0.06);
+      margin-bottom: 1.5rem;
+    }
+    .demo-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 1.5rem;
+      align-items: start;
+    }
+    @media (max-width: 860px) { .demo-grid { grid-template-columns: 1fr; } }
+    label { display: block; font-weight: 800; color: var(--charcoal); margin-bottom: 0.5rem; }
+    input[type="file"] {
+      width: 100%;
+      padding: 1rem;
+      border: 2px dashed var(--border);
+      border-radius: 12px;
+      background: #FFFDF9;
+      color: var(--charcoal);
+    }
+    button {
+      border: none;
+      border-radius: 10px;
+      padding: 0.85rem 1.2rem;
+      background: var(--copper);
+      color: white;
+      font-weight: 800;
+      cursor: pointer;
+      margin: 0.5rem 0.5rem 0 0;
+      font-size: 0.98rem;
+    }
+    button.secondary { background: var(--charcoal); }
+    button.ghost {
+      background: #FFFDF9;
+      color: var(--copper-dark);
+      border: 1px solid var(--border);
+    }
+    button:disabled { opacity: 0.55; cursor: not-allowed; }
+    .status {
+      margin-top: 1rem;
+      padding: 0.9rem 1rem;
+      border-radius: 10px;
+      background: var(--blue-light);
+      color: var(--charcoal);
+      font-weight: 700;
+      min-height: 3.3rem;
+      white-space: pre-wrap;
+    }
+    .status.error { background: var(--danger-light); color: var(--danger); }
+    .status.ok { background: var(--green-light); color: var(--green); }
+    .preview {
+      width: 100%;
+      max-height: 520px;
+      overflow: auto;
+      background: #FFFDF9;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1rem;
+    }
+    canvas, .preview img { max-width: 100%; border: 1px solid var(--border); background: white; }
+    textarea {
+      width: 100%;
+      min-height: 250px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.9rem;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1rem;
+      color: var(--charcoal);
+      background: #FFFDF9;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+    th, td {
+      padding: 0.7rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+      color: var(--charcoal);
+    }
+    th { background: #FFF8EE; font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.04em; }
+    tr:last-child td { border-bottom: none; }
+    .small { color: var(--muted); font-size: 0.92rem; }
+    .sample-box {
+      background: #FFF8EE;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1rem;
+      margin-top: 1rem;
+    }
+    .csv-output {
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      background: #FFFDF9;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1rem;
+      color: var(--charcoal);
+      min-height: 100px;
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="inner">
+      <div class="logo"><span>AI</span> Services — OCR Demo</div>
+      <a href="../">Back to main site</a>
+    </div>
+  </nav>
+
+  <header>
+    <div class="badge">Live browser demo — no server upload required</div>
+    <h1>Invoice PDF / Image to CSV</h1>
+    <p>Upload a PDF, JPG, or PNG invoice. The page runs OCR in the browser, extracts invoice-like rows, and produces a CSV preview/download you can show a client on-site.</p>
+  </header>
+
+  <main>
+    <section class="panel demo-grid">
+      <div>
+        <label for="fileInput">1. Upload invoice PDF or image</label>
+        <input id="fileInput" type="file" accept="application/pdf,image/png,image/jpeg,image/webp">
+        <button id="runBtn">Run OCR and extract CSV</button>
+        <button id="sampleBtn" class="ghost">Use built-in sample invoice</button>
+        <button id="downloadBtn" class="secondary" disabled>Download CSV</button>
+        <div id="status" class="status">Ready. Choose a file or use the built-in sample invoice.</div>
+        <div class="sample-box small">
+          <strong>Demo note:</strong> This is a static GitHub Pages demo. For client data, production deployment would run this locally/on-premise with stronger parsing rules and private storage. This page proves the workflow: document in → OCR → structured CSV out.
+        </div>
+      </div>
+      <div>
+        <label>2. Document preview</label>
+        <div id="preview" class="preview">No document loaded yet.</div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <label for="ocrText">3. OCR text extracted</label>
+      <textarea id="ocrText" readonly placeholder="OCR text will appear here..."></textarea>
+    </section>
+
+    <section class="panel">
+      <label>4. CSV result</label>
+      <div id="tableWrap" class="small">No CSV extracted yet.</div>
+      <h3>Raw CSV</h3>
+      <div id="csvOutput" class="csv-output">No CSV extracted yet.</div>
+    </section>
+  </main>
+
+<script type="module">
+  import * as pdfjsLib from 'https://cdn.jsdelivr.net/npm/pdfjs-dist@4.10.38/build/pdf.min.mjs';
+  pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@4.10.38/build/pdf.worker.min.mjs';
+
+  const fileInput = document.getElementById('fileInput');
+  const runBtn = document.getElementById('runBtn');
+  const sampleBtn = document.getElementById('sampleBtn');
+  const downloadBtn = document.getElementById('downloadBtn');
+  const statusEl = document.getElementById('status');
+  const preview = document.getElementById('preview');
+  const ocrText = document.getElementById('ocrText');
+  const tableWrap = document.getElementById('tableWrap');
+  const csvOutput = document.getElementById('csvOutput');
+
+  let renderedCanvas = null;
+  let latestCsv = '';
+
+  function setStatus(text, type = '') {
+    statusEl.className = 'status' + (type ? ' ' + type : '');
+    statusEl.textContent = text;
+  }
+
+  function csvEscape(value) {
+    const s = String(value ?? '');
+    if (/[",\n]/.test(s)) return '"' + s.replace(/"/g, '""') + '"';
+    return s;
+  }
+
+  function parseInvoiceText(text) {
+    const lines = text.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+    // Require ':' or '#' so the page title "TAX INVOICE" is not mistaken for the invoice number.
+    const invoice = (text.match(/^\s*Invoice\s*[:#]\s*([A-Z0-9-]+)/im) || [,''])[1];
+    const date = (text.match(/^\s*Date\s*:?\s*(\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4})/im) || [,''])[1];
+    const billTo = (text.match(/^\s*Bill\s*To\s*:?\s*(.+)/im) || [,''])[1];
+
+    const rows = [];
+    const itemPattern = /^(.+?)\s+(\d+(?:\.\d+)?)\s+\$?([0-9]+(?:\.[0-9]{2})?)\s+\$?([0-9]+(?:\.[0-9]{2})?)$/;
+
+    for (const line of lines) {
+      if (/^(description|subtotal|gst|tax|total|due date|invoice|date|bill to|abn)/i.test(line)) continue;
+      const m = line.match(itemPattern);
+      if (m) {
+        rows.push({
+          invoice_number: invoice,
+          date,
+          bill_to: billTo,
+          description: m[1].trim(),
+          qty: m[2],
+          unit_price: Number(m[3]).toFixed(2),
+          amount: Number(m[4]).toFixed(2)
+        });
+      }
+    }
+
+    if (!rows.length) {
+      rows.push({
+        invoice_number: invoice,
+        date,
+        bill_to: billTo,
+        description: 'OCR text extracted — manual review needed',
+        qty: '',
+        unit_price: '',
+        amount: ''
+      });
+    }
+    return rows;
+  }
+
+  function rowsToCsv(rows) {
+    const headers = ['invoice_number','date','bill_to','description','qty','unit_price','amount'];
+    return [headers.join(','), ...rows.map(r => headers.map(h => csvEscape(r[h])).join(','))].join('\n');
+  }
+
+  function renderTable(rows) {
+    const headers = ['invoice_number','date','bill_to','description','qty','unit_price','amount'];
+    tableWrap.innerHTML = '<table><thead><tr>' + headers.map(h => `<th>${h.replaceAll('_',' ')}</th>`).join('') + '</tr></thead><tbody>' +
+      rows.map(r => '<tr>' + headers.map(h => `<td>${csvEscape(r[h]).replace(/^"|"$/g, '')}</td>`).join('') + '</tr>').join('') +
+      '</tbody></table>';
+  }
+
+  async function renderPdfToCanvas(file) {
+    const bytes = new Uint8Array(await file.arrayBuffer());
+    const pdf = await pdfjsLib.getDocument({ data: bytes }).promise;
+    const page = await pdf.getPage(1);
+    const viewport = page.getViewport({ scale: 2.2 });
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = viewport.width;
+    canvas.height = viewport.height;
+    await page.render({ canvasContext: ctx, viewport }).promise;
+    return canvas;
+  }
+
+  async function renderImageToCanvas(file) {
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.src = url;
+    await img.decode();
+    const maxW = 1800;
+    const scale = Math.min(1, maxW / img.width);
+    const canvas = document.createElement('canvas');
+    canvas.width = Math.round(img.width * scale);
+    canvas.height = Math.round(img.height * scale);
+    canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+    URL.revokeObjectURL(url);
+    return canvas;
+  }
+
+  function showCanvas(canvas) {
+    preview.innerHTML = '';
+    preview.appendChild(canvas);
+    renderedCanvas = canvas;
+  }
+
+  async function processCanvas(canvas) {
+    setStatus('OCR running in browser. First run may take 10–30 seconds while the OCR engine loads...');
+    const result = await Tesseract.recognize(canvas, 'eng', {
+      logger: m => {
+        if (m.status) {
+          const pct = m.progress ? ` ${(m.progress * 100).toFixed(0)}%` : '';
+          setStatus(`OCR: ${m.status}${pct}`);
+        }
+      }
+    });
+    const text = result.data.text || '';
+    ocrText.value = text;
+    const rows = parseInvoiceText(text);
+    latestCsv = rowsToCsv(rows);
+    csvOutput.textContent = latestCsv;
+    renderTable(rows);
+    downloadBtn.disabled = false;
+    setStatus(`Done. Extracted ${rows.length} CSV row${rows.length === 1 ? '' : 's'}.`, 'ok');
+  }
+
+  async function runSelectedFile() {
+    const file = fileInput.files[0];
+    if (!file) {
+      setStatus('Choose a PDF/image first, or click the built-in sample invoice.', 'error');
+      return;
+    }
+    runBtn.disabled = true;
+    sampleBtn.disabled = true;
+    downloadBtn.disabled = true;
+    latestCsv = '';
+    csvOutput.textContent = 'Working...';
+    ocrText.value = '';
+    try {
+      setStatus('Rendering document preview...');
+      const canvas = file.type === 'application/pdf' ? await renderPdfToCanvas(file) : await renderImageToCanvas(file);
+      showCanvas(canvas);
+      await processCanvas(canvas);
+    } catch (err) {
+      console.error(err);
+      setStatus('Failed: ' + (err.message || err), 'error');
+    } finally {
+      runBtn.disabled = false;
+      sampleBtn.disabled = false;
+    }
+  }
+
+  function makeSampleInvoiceCanvas() {
+    const canvas = document.createElement('canvas');
+    canvas.width = 1200;
+    canvas.height = 1600;
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = 'white';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = '#111';
+    ctx.font = 'bold 48px Arial';
+    ctx.fillText('TAX INVOICE', 90, 130);
+    ctx.font = '32px Arial';
+    const lines = [
+      'ACME ELECTRICAL PTY LTD',
+      'ABN 12 345 678 901',
+      'Invoice: INV-1042',
+      'Date: 12/06/2026',
+      'Bill To: Brisbane Tennis Club',
+      '',
+      'Description                         Qty  Unit     Amount',
+      'LED court light inspection           2   120.00    240.00',
+      'Switchboard safety check             1   180.00    180.00',
+      'Travel / call-out                    1    85.00     85.00',
+      '',
+      'Subtotal:                                      505.00',
+      'GST:                                            50.50',
+      'Total:                                         555.50',
+      'Due Date: 26/06/2026'
+    ];
+    let y = 210;
+    ctx.font = '30px "Courier New", monospace';
+    for (const line of lines) {
+      ctx.fillText(line, 90, y);
+      y += 48;
+    }
+    return canvas;
+  }
+
+  runBtn.addEventListener('click', runSelectedFile);
+  sampleBtn.addEventListener('click', async () => {
+    runBtn.disabled = true;
+    sampleBtn.disabled = true;
+    downloadBtn.disabled = true;
+    latestCsv = '';
+    ocrText.value = '';
+    csvOutput.textContent = 'Working...';
+    try {
+      const canvas = makeSampleInvoiceCanvas();
+      showCanvas(canvas);
+      await processCanvas(canvas);
+    } catch (err) {
+      console.error(err);
+      setStatus('Failed: ' + (err.message || err), 'error');
+    } finally {
+      runBtn.disabled = false;
+      sampleBtn.disabled = false;
+    }
+  });
+
+  downloadBtn.addEventListener('click', () => {
+    if (!latestCsv) return;
+    const blob = new Blob([latestCsv], { type: 'text/csv;charset=utf-8' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'invoice-extraction.csv';
+    a.click();
+    URL.revokeObjectURL(a.href);
+  });
+</script>
+</body>
+</html>

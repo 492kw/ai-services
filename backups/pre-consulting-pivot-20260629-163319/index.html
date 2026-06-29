@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Services — AI Automation for Small Business</title>
+    <meta name="description" content="On-premise AI document processing for Brisbane SMBs. Hardware + automation + support. No cloud, no per-use fees.">
+    <style>
+        :root {
+            --cream: #FAF6F0;
+            --copper: #B87333;
+            --copper-light: #D4956A;
+            --copper-dark: #8B5E2E;
+            --charcoal: #2D2D2D;
+            --card: #FFFFFF;
+            --text: #3A3A3A;
+            --muted: #6B6B6B;
+            --border: #E8E0D5;
+            --green: #5B8C5A;
+            --green-lt: #EEF7EC;
+            --blue-lt: #EEF2FD;
+            --amber: #B45309;
+            --amber-lt: #FEF3E2;
+            --purple-lt: #F5F0FF;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: var(--cream); color: var(--text); line-height: 1.7; }
+
+        /* Navigation */
+        nav { background: var(--card); border-bottom: 1px solid var(--border); padding: 0 2rem; position: sticky; top: 0; z-index: 10; }
+        nav .inner { max-width: 1100px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding: 1rem 0; }
+        nav .logo { font-size: 1.3rem; font-weight: 700; color: var(--charcoal); }
+        nav .logo span { color: var(--copper); }
+        nav a { color: var(--muted); text-decoration: none; margin-left: 2rem; font-size: 0.95rem; transition: color 0.2s; }
+        nav a:hover { color: var(--copper); }
+
+        /* Hero */
+        .hero { padding: 5rem 2rem; text-align: center; max-width: 800px; margin: 0 auto; }
+        .hero h1 { font-size: 2.8rem; font-weight: 800; color: var(--charcoal); line-height: 1.2; margin-bottom: 1rem; }
+        .hero h1 .big { font-size: 4.2rem; display: block; color: var(--charcoal); }
+        .hero h1 span { color: var(--copper); }
+        .hero p { font-size: 1.2rem; color: var(--muted); max-width: 600px; margin: 0 auto 2rem; }
+        .hero .cta { display: inline-block; background: var(--copper); color: #fff; padding: 0.9rem 2rem; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 1.05rem; transition: background 0.2s; }
+        .hero .cta:hover { background: var(--copper-light); }
+
+        /* Sections */
+        section { padding: 4rem 2rem; }
+        section .inner { max-width: 1100px; margin: 0 auto; }
+        section h2 { font-size: 2rem; font-weight: 700; color: var(--charcoal); text-align: center; margin-bottom: 0.5rem; }
+        section .subtitle { text-align: center; color: var(--muted); margin-bottom: 3rem; font-size: 1.05rem; }
+
+        /* Services */
+        .services { background: var(--card); }
+        .services-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; }
+        .service-card { background: var(--cream); border: 1px solid var(--border); border-radius: 12px; padding: 2rem; text-align: center; transition: transform 0.2s, box-shadow 0.2s; }
+        .service-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,0.06); }
+        .service-card .icon { font-size: 2.5rem; margin-bottom: 1rem; }
+        .service-card h3 { font-size: 1.2rem; color: var(--charcoal); margin-bottom: 0.5rem; }
+        .service-card p { color: var(--muted); font-size: 0.95rem; }
+
+        /* How it works — 3 components */
+        .flow-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; align-items: stretch; }
+        .flow-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; position: relative; }
+        .flow-card .flow-head { padding: 1.25rem; text-align: center; color: #fff; }
+        .flow-card .flow-head .f-icon { font-size: 1.5rem; margin-bottom: 0.4rem; }
+        .flow-card .flow-head h3 { font-size: 1.05rem; color: #fff; }
+        .flow-card .flow-head .f-tag { display: inline-block; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; background: rgba(255,255,255,0.15); padding: 2px 10px; border-radius: 10px; margin-top: 4px; }
+        .flow-card .flow-body { padding: 1.25rem; font-size: 0.95rem; color: var(--muted); }
+        .flow-card.fc-setup .flow-head { background: var(--copper); }
+        .flow-card.fc-sub .flow-head { background: var(--green); }
+        .flow-card.fc-feat .flow-head { background: var(--amber); }
+        .flow-arrows { display: flex; justify-content: center; align-items: center; gap: 0.5rem; margin: 1rem 0; color: var(--muted); font-size: 1.2rem; }
+
+        @media (max-width: 800px) {
+            .flow-grid { grid-template-columns: 1fr; max-width: 400px; margin: 0 auto; }
+        }
+
+        /* Hardware Tiers */
+        .tier-section { background: var(--card); }
+        .tier-table { width: 100%; border-collapse: collapse; background: var(--cream); border-radius: 12px; overflow: hidden; }
+        .tier-table th { text-align: left; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); padding: 12px 16px; border-bottom: 2px solid var(--border); font-weight: 600; background: var(--card); }
+        .tier-table td { padding: 14px 16px; font-size: 0.9rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+        .tier-table tr:last-child td { border-bottom: none; }
+        .tier-table td:first-child { font-weight: 700; color: var(--charcoal); }
+        .tier-badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 4px; font-size: 0.85rem; font-weight: 700; }
+        .tier-badge.entry { background: var(--blue-lt); color: #1B4FD8; }
+        .tier-badge.standard { background: var(--green-lt); color: #0B6E4F; }
+        .tier-badge.performance { background: var(--purple-lt); color: #5B21B6; }
+        .spec-tag { display: inline-block; background: var(--card); border: 1px solid var(--border); border-radius: 3px; padding: 1px 6px; font-family: monospace; font-size: 0.8rem; color: var(--charcoal); margin: 1px 2px; }
+        .best-for { font-size: 0.85rem; color: var(--muted); font-style: italic; }
+
+        @media (max-width: 640px) {
+            .tier-table, .tier-table thead, .tier-table tbody, .tier-table tr, .tier-table th, .tier-table td { display: block; }
+            .tier-table thead { display: none; }
+            .tier-table td { padding: 8px 12px; border-bottom: none; }
+            .tier-table td::before { content: attr(data-label); font-weight: 600; display: block; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 2px; }
+            .tier-table tr { border: 1px solid var(--border); border-radius: 8px; margin-bottom: 1rem; background: var(--card); overflow: hidden; }
+            .tier-table tr td:first-child { background: var(--cream); padding: 10px 12px; }
+        }
+
+        /* Subscription Tiers */
+        .sub-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+        .sub-card { background: var(--card); border: 2px solid var(--border); border-radius: 12px; padding: 2rem; display: flex; flex-direction: column; position: relative; }
+        .sub-card.featured { border-color: var(--copper); }
+        .sub-card.featured::before { content: '★ Most Popular'; position: absolute; top: -14px; left: 50%; transform: translateX(-50%); background: var(--copper); color: #fff; padding: 4px 16px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.5px; }
+        .sub-card h3 { font-size: 1.15rem; color: var(--charcoal); margin-bottom: 0.3rem; }
+        .sub-card .sub-meta { font-size: 0.8rem; color: var(--muted); margin-bottom: 1rem; }
+        .sub-card .price-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); }
+        .sub-card ul { list-style: none; padding: 0; margin: 1rem 0; flex: 1; }
+        .sub-card ul li { padding: 0.35rem 0; font-size: 0.9rem; color: var(--text); border-bottom: 1px solid var(--cream); display: flex; justify-content: space-between; }
+        .sub-card ul li:last-child { border-bottom: none; }
+        .sub-card ul li .sk { color: var(--muted); }
+        .sub-card ul li .sv { font-weight: 600; text-align: right; }
+        .sub-card .btn { display: inline-block; background: var(--copper); color: #fff; padding: 0.65rem 1.5rem; border-radius: 8px; text-decoration: none; font-weight: 600; text-align: center; transition: background 0.2s; }
+        .sub-card .btn:hover { background: var(--copper-light); }
+        .sub-card .btn-outline { background: transparent; color: var(--copper); border: 2px solid var(--copper); }
+        .sub-card .btn-outline:hover { background: var(--cream); }
+
+        @media (max-width: 800px) {
+            .sub-grid { grid-template-columns: 1fr; max-width: 400px; margin: 0 auto; }
+        }
+
+        /* Feature Additions */
+        .feat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+        .feat-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 1.25rem; border-top: 3px solid var(--copper); }
+        .feat-card .feat-icon { font-size: 1.3rem; margin-bottom: 0.5rem; display: block; }
+        .feat-card h4 { font-size: 0.95rem; font-weight: 600; color: var(--charcoal); margin-bottom: 0.3rem; }
+        .feat-card p { font-size: 0.85rem; color: var(--muted); line-height: 1.5; }
+
+        @media (max-width: 640px) {
+            .feat-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 420px) {
+            .feat-grid { grid-template-columns: 1fr; }
+        }
+
+        /* Why Section */
+        .why { background: var(--card); }
+        .why-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; }
+        .why-card { background: var(--cream); border: 1px solid var(--border); border-radius: 12px; padding: 2rem; }
+        .why-card h3 { font-size: 1.1rem; color: var(--charcoal); margin-bottom: 0.5rem; }
+        .why-card p { color: var(--muted); font-size: 0.95rem; }
+        .why-card .check { color: var(--green); font-weight: 700; }
+
+        /* Contact */
+        .contact-info { text-align: center; background: var(--copper); color: #fff; padding: 4rem 2rem; border-radius: 12px; }
+        .contact-info h2 { color: #fff; }
+        .contact-info .subtitle { color: rgba(255,255,255,0.8); }
+        .contact-info a { color: #fff; text-decoration: underline; font-weight: 600; }
+
+        /* Footer */
+        footer { text-align: center; padding: 2rem; color: var(--muted); font-size: 0.9rem; border-top: 1px solid var(--border); }
+
+        @media (max-width: 640px) {
+            nav .nav-links { display: none; }
+            .hero h1 { font-size: 2rem; }
+            .hero p { font-size: 1rem; }
+            section { padding: 3rem 1rem; }
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <div class="inner">
+        <div class="logo"><span>AI</span> Services</div>
+        <div class="nav-links">
+            <a href="#services">Services</a>
+            <a href="#how">How It Works</a>
+            <a href="#hardware">Hardware</a>
+            <a href="#pricing">Pricing</a>
+            <a href="#contact">Contact</a>
+            <a href="tradie-demo/">TradieFlow Demo</a>
+            <a href="./social-tennis-program.html">Tennis App Showcase</a>
+        </div>
+    </div>
+</nav>
+
+<section class="hero">
+    <h1><span class="big">AI Assistant</span><br><span>That Lives in Your Office</span></h1>
+    <p>We install private AI automation in your business — on hardware you own — that handles your repetitive document, data, and admin tasks automatically. Your data never leaves the building.</p>
+    <a href="#contact" class="cta">Start the Conversation</a>
+</section>
+
+<section class="services" id="services">
+    <div class="inner">
+        <h2>What We Do</h2>
+        <p class="subtitle">AI-powered automation and web development for the tasks that slow your business down</p>
+        <div class="services-grid">
+            <div class="service-card">
+                <div class="icon">📄</div>
+                <h3>PDF to Spreadsheet</h3>
+                <p>Invoices, purchase orders, timesheets — any PDF with data that needs collecting. AI extracts what matters and populates your spreadsheets automatically.</p>
+            </div>
+            <div class="service-card">
+                <div class="icon">🔍</div>
+                <h3>OCR &amp; Document Understanding</h3>
+                <p>Scanned documents, receipts, handwritten notes — turned into structured data for your bookkeeping and records. Try the <a href="ocr-demo/" style="color:var(--copper); font-weight:600;">live invoice-to-CSV demo</a>.</p>
+            </div>
+            <div class="service-card">
+                <div class="icon">⚙️</div>
+                <h3>Custom Workflow Automation</h3>
+                <p>Every business has that one annoying manual process. We build bespoke automations that fit your actual workflow — not a one-size-fits-all product.</p>
+            </div>
+            <div class="service-card">
+                <div class="icon">🔐</div>
+                <h3>On-Premise, Not Cloud</h3>
+                <p>Everything runs on a PC in your office. Financial documents, legal files, client data — it never leaves your building.</p>
+            </div>
+            <div class="service-card">
+                <div class="icon">🤝</div>
+                <h3>Remote Support &amp; Ongoing Improvement</h3>
+                <p>We support everything remotely. As your needs grow, we add new automations — all without another site visit.</p>
+            </div>
+            <div class="service-card">
+                <div class="icon">🏢</div>
+                <h3>Built for Brisbane SMBs</h3>
+                <p>Local understanding of how Australian small businesses operate. Tradies, accountants, real estate, legal — we know your workflow.</p>
+            </div>
+            <div class="service-card">
+                <div class="icon">🌐</div>
+                <h3>Website Creation &amp; Manipulation</h3>
+                <p>Need a website built or updated? We design and develop sites tailored to your business. Better yet — we can demo the creation and manipulation <a href="website-demo/" style="color:var(--copper); font-weight:600;">live right here</a>, so you see exactly what's happening as we build it.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="how">
+    <div class="inner">
+        <h2>How the Service Works</h2>
+        <p class="subtitle">Three components that work together — one-off setup, ongoing support, and additions as you grow</p>
+        <div class="flow-arrows">Setup &nbsp;→&nbsp; Subscribe &nbsp;+&nbsp; Add Features</div>
+        <div class="flow-grid">
+            <div class="flow-card fc-setup">
+                <div class="flow-head">
+                    <div class="f-icon">🖥️</div>
+                    <h3>Setup Package</h3>
+                    <span class="f-tag">One-Time</span>
+                </div>
+                <div class="flow-body">
+                    We supply and configure the hardware, install it in your office, build your first automation workflow, and hand over before we leave. Fixed price — no surprises.
+                </div>
+            </div>
+            <div class="flow-card fc-sub">
+                <div class="flow-head">
+                    <div class="f-icon">🔧</div>
+                    <h3>Monthly Subscription</h3>
+                    <span class="f-tag">Ongoing</span>
+                </div>
+                <div class="flow-body">
+                    Remote monitoring, break-fix support, minor adjustments, and software updates keep your existing automations running reliably. Choose Essential, Standard, or Premium.
+                </div>
+            </div>
+            <div class="flow-card fc-feat">
+                <div class="flow-head">
+                    <div class="f-icon">✨</div>
+                    <h3>Feature Additions</h3>
+                    <span class="f-tag">Per Project</span>
+                </div>
+                <div class="flow-body">
+                    Need a new workflow? Each addition is scoped, quoted at a fixed price, and agreed before work starts. Added remotely — no disruption to your office.
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="tier-section" id="hardware">
+    <div class="inner">
+        <h2>Choose Your Hardware Tier</h2>
+        <p class="subtitle">More powerful hardware means faster processing and the ability to run larger AI models — choose what fits your workload</p>
+        <table class="tier-table">
+            <thead>
+                <tr>
+                    <th>Tier</th>
+                    <th>Specifications</th>
+                    <th>Performance</th>
+                    <th>Price (approx)</th>
+                    <th>Best For</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><span class="tier-badge entry">⚡ Entry</span></td>
+                    <td>
+                        <span class="spec-tag">16-32 GB RAM</span>
+                        <span class="spec-tag">CPU only</span>
+                        <span class="spec-tag">512 GB NVMe</span>
+                        <span class="spec-tag">Mini PC</span>
+                    </td>
+                    <td><span class="spec-tag">10-18 tok/s</span><br><span style="font-size:0.8rem;color:var(--muted);">7B Q4 model</span></td>
+                    <td style="font-weight:600; color:var(--copper); white-space:nowrap;">~$1,000</td>
+                    <td class="best-for">1 automation &middot; light volume &middot; single repetitive task e.g. invoice extraction</td>
+                </tr>
+                <tr>
+                    <td><span class="tier-badge standard">🚀 Standard</span></td>
+                    <td>
+                        <span class="spec-tag">32-64 GB RAM</span>
+                        <span class="spec-tag">RTX 3060 12 GB</span>
+                        <span class="spec-tag">1 TB NVMe</span>
+                        <span class="spec-tag">Workstation</span>
+                    </td>
+                    <td><span class="spec-tag">40-60 tok/s</span><br><span style="font-size:0.8rem;color:var(--muted);">7B-13B VLM</span></td>
+                    <td style="font-weight:600; color:var(--copper); white-space:nowrap;">~$2,000</td>
+                    <td class="best-for">2-4 automations &middot; OCR + bookkeeping + email triage concurrently</td>
+                </tr>
+                <tr>
+                    <td><span class="tier-badge performance">🏆 Performance</span></td>
+                    <td>
+                        <span class="spec-tag">64-128 GB RAM</span>
+                        <span class="spec-tag">RTX 3090 24 GB</span>
+                        <span class="spec-tag">2 TB NVMe</span>
+                        <span class="spec-tag">Tower</span>
+                    </td>
+                    <td><span class="spec-tag">80-120 tok/s</span><br><span style="font-size:0.8rem;color:var(--muted);">13B-32B VLM</span></td>
+                    <td style="font-weight:600; color:var(--copper); white-space:nowrap;">~$4,000</td>
+                    <td class="best-for">5+ automations &middot; multi-department &middot; real-time processing &middot; future-proof</td>
+                </tr>
+            </tbody>
+        </table>
+        <p style="text-align:center; font-size:0.85rem; color:var(--muted); margin-top:1rem;"><em>Prices are approximate and may vary due to hardware availability and market conditions.</em></p>
+    </div>
+</section>
+
+<section id="pricing">
+    <div class="inner">
+        <h2>Simple Pricing</h2>
+        <p class="subtitle">Transparent. No lock-in. No surprises.</p>
+        <p style="text-align:center; font-size:0.9rem; color:var(--muted); margin-bottom:1.5rem;">Monthly subscription covers ongoing support of <strong style="color:var(--charcoal);">existing</strong> automations. New features always quoted separately.</p>
+        <div class="sub-grid">
+            <div class="sub-card">
+                <h3>Essential</h3>
+                <div class="sub-meta">Entry-tier support</div>
+                <div class="price-label">$100 / month + GST</div>
+                <ul>
+                    <li><span class="sk">Monitoring</span><span class="sv">Monthly</span></li>
+                    <li><span class="sk">Response</span><span class="sv">Next biz day</span></li>
+                    <li><span class="sk">Adjustments</span><span class="sv">1 / month</span></li>
+                    <li><span class="sk">Updates</span><span class="sv">Quarterly</span></li>
+                    <li><span class="sk">Best for</span><span class="sv">1 automation</span></li>
+                </ul>
+                <a href="#contact" class="btn btn-outline">Ask About It</a>
+            </div>
+            <div class="sub-card featured">
+                <h3>Standard</h3>
+                <div class="sub-meta">Best value for most businesses</div>
+                <div class="price-label">$180 / month + GST</div>
+                <ul>
+                    <li><span class="sk">Monitoring</span><span class="sv">Weekly</span></li>
+                    <li><span class="sk">Response</span><span class="sv">Same biz day</span></li>
+                    <li><span class="sk">Adjustments</span><span class="sv">3 / month</span></li>
+                    <li><span class="sk">Updates</span><span class="sv">Monthly</span></li>
+                    <li><span class="sk">Check-in call</span><span class="sv">Monthly</span></li>
+                    <li><span class="sk">Best for</span><span class="sv">1-3 automations</span></li>
+                </ul>
+                <a href="#contact" class="btn">Let's Talk</a>
+            </div>
+            <div class="sub-card">
+                <h3>Premium</h3>
+                <div class="sub-meta">For high-volume operations</div>
+                <div class="price-label">$500 / month + GST</div>
+                <ul>
+                    <li><span class="sk">Monitoring</span><span class="sv">Daily + alerts</span></li>
+                    <li><span class="sk">Response</span><span class="sv">Within 4 hrs</span></li>
+                    <li><span class="sk">Adjustments</span><span class="sv">Unlimited</span></li>
+                    <li><span class="sk">Updates</span><span class="sv">Rolling</span></li>
+                    <li><span class="sk">Feature queue</span><span class="sv">Priority</span></li>
+                    <li><span class="sk">Best for</span><span class="sv">3+ automations</span></li>
+                </ul>
+                <a href="#contact" class="btn btn-outline">Ask About It</a>
+            </div>
+        </div>
+
+        <div style="margin-top:2.5rem;">
+            <h3 style="text-align:center; font-size:1.1rem; color:var(--charcoal); margin-bottom:1rem;">Feature Additions — Fixed Price Per Project</h3>
+            <div class="feat-grid">
+                <div class="feat-card">
+                    <span class="feat-icon">📄</span>
+                    <h4>New Document Type</h4>
+                    <p>Add another format to an existing workflow — purchase orders, dockets, contracts</p>
+                </div>
+                <div class="feat-card">
+                    <span class="feat-icon">🔗</span>
+                    <h4>Software Integration</h4>
+                    <p>Connect to your accounting, CRM, or practice management software</p>
+                </div>
+                <div class="feat-card">
+                    <span class="feat-icon">📊</span>
+                    <h4>Scheduled Reporting</h4>
+                    <p>Auto-generate KPI dashboards or financial summaries on a schedule</p>
+                </div>
+                <div class="feat-card">
+                    <span class="feat-icon">📧</span>
+                    <h4>Email Processing</h4>
+                    <p>Automatically read, sort, log, and respond to common enquiries</p>
+                </div>
+                <div class="feat-card">
+                    <span class="feat-icon">🕐</span>
+                    <h4>Timesheet &amp; Expenses</h4>
+                    <p>Process staff timesheets or expense claims from photos or PDFs</p>
+                </div>
+                <div class="feat-card">
+                    <span class="feat-icon">⚙️</span>
+                    <h4>Custom Workflow</h4>
+                    <p>Any repetitive task that follows a pattern — we scope, quote, and build it</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="why" id="why">
+    <div class="inner">
+        <h2>Why This Works</h2>
+        <p class="subtitle">What makes this different from every other AI solution</p>
+        <div class="why-grid">
+            <div class="why-card">
+                <h3><span class="check">✓</span> Your Data, Your Office</h3>
+                <p>Sensitive financial and legal documents stay on a machine you own, in your building. Not a cloud server in some other country.</p>
+            </div>
+            <div class="why-card">
+                <h3><span class="check">✓</span> No Per-Use Fees</h3>
+                <p>One-time hardware cost plus a fixed monthly support fee. No per-document charges, no SaaS subscriptions.</p>
+            </div>
+            <div class="why-card">
+                <h3><span class="check">✓</span> Built for Your Actual Process</h3>
+                <p>No generic template. We build automation for the exact documents your business handles — invoices, timesheets, receipts, whatever you have.</p>
+            </div>
+            <div class="why-card">
+                <h3><span class="check">✓</span> Remote Support, Zero Hassle</h3>
+                <p>We monitor and maintain everything via encrypted remote access. If something needs fixing or improving, we handle it — you don't lift a finger.</p>
+            </div>
+            <div class="why-card">
+                <h3><span class="check">✓</span> 20+ Years IT Experience</h3>
+                <p>Brisbane-based IT professional. We understand how local businesses work and what they actually need — not what Silicon Valley thinks they need.</p>
+            </div>
+            <div class="why-card">
+                <h3><span class="check">✓</span> One Clear Cost, No Surprises</h3>
+                <p>You know what you're paying upfront. Hardware with a transparent margin, setup fee, and optional support retainer. No hidden anything.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <div class="inner">
+        <div class="contact-info" id="contact">
+            <h2>Let's Talk About Automating Your Business</h2>
+            <p class="subtitle">No sales pitch. We'll tell you honestly whether AI can help your workflow.</p>
+            <p style="margin-top:1.5rem; font-size:1.05rem;">
+                📧 <a href="mailto:simonfungwork@gmail.com">simonfungwork@gmail.com</a><br>
+                📍 Brisbane, Australia
+            </p>
+        </div>
+    </div>
+</section>
+
+<footer>
+    <p>AI Services — AI Automation Services for Small Business. Brisbane, Australia.</p>
+</footer>
+
+</body>
+</html>
