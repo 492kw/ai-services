@@ -366,6 +366,47 @@
     .proof-row strong { color: var(--ink); }
     .proof-row span { color: var(--muted); }
 
+    .testimonials { display: grid; gap: 1rem; }
+    .testimonial-card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 1.6rem 1.8rem;
+      position: relative;
+    }
+    .testimonial-card::before {
+      content: "\201C";
+      font-family: Georgia, serif;
+      font-size: 3rem;
+      color: var(--soft);
+      line-height: 1;
+      position: absolute;
+      top: 0.6rem;
+      left: 1rem;
+      opacity: 0.6;
+    }
+    .testimonial-body {
+      position: relative;
+      z-index: 1;
+      padding-left: 0.5rem;
+    }
+    .testimonial-quotes { display: grid; gap: 0.6rem; margin-bottom: 1rem; }
+    .testimonial-quotes p {
+      margin: 0;
+      font-size: 0.95rem;
+      line-height: 1.55;
+      color: var(--text);
+    }
+    .testimonial-attr {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding-top: 0.8rem;
+      border-top: 1px solid var(--line);
+    }
+    .testimonial-attr strong { color: var(--ink); font-size: 0.9rem; }
+    .testimonial-attr span { color: var(--muted); font-size: 0.82rem; }
+
     .process {
       background: rgba(255, 253, 248, 0.62);
       border-block: 1px solid rgba(216, 207, 192, 0.72);
@@ -463,6 +504,7 @@
         <ul>
           <li><a href="#services">Services</a></li>
           <li><a href="#portfolio">Work</a></li>
+          <li><a href="#testimonials">Feedback</a></li>
           <li><a href="#approach">Approach</a></li>
           <li><a href="#contact">Contact</a></li>
         </ul>
@@ -583,6 +625,30 @@
               <h3>From problem to working prototype</h3>
               <p>The same pattern applies across projects: understand the workflow, build a focused version, test it with real use and improve what matters.</p>
               <a class="project-link" href="#approach">Read approach</a>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="testimonials" aria-labelledby="testimonials-title">
+      <div class="wrap">
+        <div class="section-head center">
+          <h2 id="testimonials-title">What users say.</h2>
+          <p>Real feedback from people using the tennis app in their sessions.</p>
+        </div>
+        <div class="testimonials">
+          <article class="testimonial-card">
+            <div class="testimonial-body">
+              <div class="testimonial-quotes">
+                <p>I tested a commercial product recently and it was unimpressive. On first sight, yours is better.</p>
+                <p>The TV link is excellent. That is what Carl intended for our current system but it was more problematic back then.</p>
+                <p>Yes, yes. Understood. But I just comment that people are selling systems that are not impressive.</p>
+              </div>
+              <div class="testimonial-attr">
+                <strong>Peter</strong>
+                <span>Social tennis session operator</span>
+              </div>
             </div>
           </article>
         </div>
